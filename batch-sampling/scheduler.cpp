@@ -10,7 +10,7 @@
 
 Scheduler::Scheduler() {
     policy_ = MIT;
-    probe_ratio_ = 1;
+    probe_ratio_ = 1.0;
 }
 
 Scheduler::Scheduler(Policy p, double r) {

@@ -9,14 +9,17 @@
 #define BATCH_SAMPLING_SIMULATOR_H_
 
 #include <vector>
-#include "./common.h"
+#include <random>
+#include <cstdint>
 #include "./cluster.h"
 
 class Simulator {
 public:
     Simulator();
-    int init(int64_t n);
-//    std::vector<Cluster> cluster() const {return cluster_;}
+    void init(int64_t n, double a, int64_t b, double t, double r);
+        // r is the probe ratio
+    void arrive(std::mt19937 &rng);
+    void depart(std::mt19937 &rng);
 private:
     int64_t num_server_;
     double arrival_rate_per_server_;

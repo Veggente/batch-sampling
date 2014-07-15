@@ -9,15 +9,19 @@
 #define BATCH_SAMPLING_CLUSTER_H_
 
 #include <random>
+#include <vector>
+#include <cstdint>
 #include "./scheduler.h"
 #include "./common.h"
+
+std::vector<int64_t> rand_sample(int64_t n, int64_t m);
 
 class Cluster {
 public:
     Cluster();
     int init(int64_t n, Policy p, double r, double t);
-    int64_t num_server() const {return queue_length_.size();}
-    Queues queue_length() const {return queue_length_;}
+//    int64_t num_server() const {return queue_length_.size();}
+//    Queues queue_length() const {return queue_length_;}
     void arrive(std::mt19937 &rng);
     void depart(std::mt19937 &rng);
 private:

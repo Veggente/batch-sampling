@@ -2,7 +2,6 @@
 //  main.cpp
 //  batch-sampling
 //
-//  Created by Veggente on 7/13/14.
 //  Copyright (c) 2014 Xiaohan Kang. All rights reserved.
 //
 

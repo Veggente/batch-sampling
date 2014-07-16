@@ -28,6 +28,6 @@ void Simulator::init(int64_t n, double a, int64_t b, double t, double r) {
     assert(r >= 1.0);
     cluster_ = std::vector<Cluster>(POLICY_COUNT, Cluster());
     for (int i = 0; i < POLICY_COUNT; ++i) {
-        cluster_[i].init(n, static_cast<Policy>(i), r, t);
+        cluster_[i].init(n, b, static_cast<Policy>(i), r, t);
     }
 }

@@ -14,12 +14,12 @@
 #include "./scheduler.h"
 #include "./common.h"
 
-std::vector<int64_t> rand_sample(int64_t n, int64_t m);
+Queues rand_sample(int64_t n, int64_t m, std::mt19937 &rng);
 
 class Cluster {
 public:
     Cluster();
-    int init(int64_t n, Policy p, double r, double t);
+    int init(int64_t n, int64_t b, Policy p, double r, double t);
 //    int64_t num_server() const {return queue_length_.size();}
 //    Queues queue_length() const {return queue_length_;}
     void arrive(std::mt19937 &rng);
@@ -28,6 +28,8 @@ private:
     Queues queue_length_;
     Scheduler scheduler_;
     double time_slot_length_;
+    int64_t num_server_;
+    int64_t batch_size_;
 };
 
 #endif  // BATCH_SAMPLING_CLUSTER_H_

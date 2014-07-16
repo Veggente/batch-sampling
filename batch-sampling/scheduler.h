@@ -14,6 +14,7 @@ class Scheduler {
 public:
     Scheduler();
     Scheduler(Policy p, double r);
+    double probe_ratio() const {return probe_ratio_;}
 private:
     Policy policy_;
     double probe_ratio_;

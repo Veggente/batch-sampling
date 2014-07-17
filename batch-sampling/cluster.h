@@ -11,6 +11,7 @@
 #include <random>
 #include <vector>
 #include <cstdint>
+#include <cassert>
 #include "./scheduler.h"
 #include "./common.h"
 

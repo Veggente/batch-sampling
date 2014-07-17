@@ -8,7 +8,10 @@
 #ifndef BATCH_SAMPLING_SCHEDULER_H_
 #define BATCH_SAMPLING_SCHEDULER_H_
 
+#include <random>
 #include "./common.h"
+
+Queues bswf(const Queues &queue, int64_t num_to_fill, std::mt19937 &rng);
 
 class Scheduler {
 public:

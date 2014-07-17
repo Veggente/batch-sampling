@@ -11,9 +11,9 @@
 #include <vector>
 
 enum Policy {
-    MIT,  // Mitzenmacher's power-of-d-choices
-    BS,  // batch sampling
-    BSWF,  // batch sampling with water filling
+    MIT,   // Mitzenmacher's power-of-d-choices.
+    BS,    // Batch sampling.
+    BSWF,  // Batch sampling with water filling.
     POLICY_COUNT
 };
 

@@ -16,12 +16,12 @@
 class Simulator {
 public:
     Simulator();
+    // r is the probe ratio.
     void init(int64_t n, double a, int64_t b, double t, double r);
-        // r is the probe ratio
     void arrive(std::mt19937 &rng);
     void depart(std::mt19937 &rng);
 private:
-    int64_t num_server_;
+    int64_t num_servers_;
     double arrival_rate_per_server_;
     int64_t batch_size_;
     double time_slot_length_;

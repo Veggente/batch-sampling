@@ -11,7 +11,10 @@
 #include <random>
 #include "./common.h"
 
+// Batch sampling with water filling algorithm.
 Queues bswf(const Queues &queue, int64_t num_to_fill, std::mt19937 &rng);
+// Batch sampling without water filling algorithm.
+Queues bs(const Queues &queue, int64_t num_to_fill, std::mt19937 &rng);
 
 class Scheduler {
 public:

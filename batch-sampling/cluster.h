@@ -21,15 +21,13 @@ class Cluster {
 public:
     Cluster();
     int init(int64_t n, int64_t b, Policy p, double r, double t);
-//    int64_t num_server() const {return queue_length_.size();}
-//    Queues queue_length() const {return queue_length_;}
     void arrive(std::mt19937 &rng);
     void depart(std::mt19937 &rng);
 private:
     Queues queue_length_;
     Scheduler scheduler_;
     double time_slot_length_;
-    int64_t num_server_;
+    int64_t num_servers_;
     int64_t batch_size_;
 };
 

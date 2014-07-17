@@ -10,7 +10,7 @@
 #include "./common.h"
 
 Simulator::Simulator() {
-    num_server_ = 0;
+    num_servers_ = 0;
     arrival_rate_per_server_ = 1.0;
     batch_size_ = 1;
     time_slot_length_ = 1.0;
@@ -18,7 +18,7 @@ Simulator::Simulator() {
 
 void Simulator::init(int64_t n, double a, int64_t b, double t, double r) {
     assert(n >= 0);
-    num_server_ = n;
+    num_servers_ = n;
     assert(a >= 0.0);
     arrival_rate_per_server_ = a;
     assert(b >= 0);

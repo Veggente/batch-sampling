@@ -9,7 +9,7 @@
 #include <cmath>
 
 Controller::Controller() {
-    num_server_ = 0;
+    num_servers_ = 0;
     batch_size_ = 0;
     arrival_rate_per_server_ = 1.0;
     arrival_probability_ = 1.0;
@@ -20,10 +20,10 @@ Controller::Controller() {
 
 void Controller::init(int64_t n, double a, double arr_pr, double total_time,
                       double r) {
-    num_server_ = n;
-    batch_size_ = llrint(std::log2(num_server_));
+    num_servers_ = n;
+    batch_size_ = llrint(std::log2(num_servers_));
     arrival_rate_per_server_ = a;
     arrival_probability_ = arr_pr;
-    time_slot_length_ = arrival_probability_*batch_size_/num_server_
+    time_slot_length_ = arrival_probability_*batch_size_/num_servers_
         /arrival_rate_per_server_;
 }

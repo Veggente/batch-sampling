@@ -14,13 +14,13 @@
 Cluster::Cluster() {
     scheduler_ = Scheduler();
     time_slot_length_ = 1.0;
-    num_server_ = 0;
+    num_servers_ = 0;
     batch_size_ = 0;
 }
 
 int Cluster::init(int64_t n, int64_t b, Policy p, double r, double t) {
     assert(n >= 0);
-    num_server_ = n;
+    num_servers_ = n;
     queue_length_ = Queues(n, 0);
     assert(r >= 1.0);
     scheduler_ = Scheduler(p, r);
@@ -32,16 +32,16 @@ int Cluster::init(int64_t n, int64_t b, Policy p, double r, double t) {
 }
 
 void Cluster::arrive(std::mt19937 &rng) {
-    int64_t num_probed_server = llrint(batch_size_*scheduler_.probe_ratio());
-    assert(num_probed_server >= 0);
-    assert(num_probed_server <= num_server_);
-    Queues probed_server = rand_sample(num_server_, num_probed_server, rng);
-    // assign m customers onto the probed servers according to policy
+    int64_t num_probed_servers = llrint(batch_size_*scheduler_.probe_ratio());
+    assert(num_probed_servers >= 0);
+    assert(num_probed_servers <= num_servers_);
+    Queues probed_server = rand_sample(num_servers_, num_probed_servers, rng);
+    //TODO: assign m customers onto the probed servers according to policy.
 }
 
 void Cluster::depart(std::mt19937 &rng) {
-    // generate Bernoulli random variables
-    // depart
+    //TODO: generate Bernoulli random variables.
+    //TODO: depart.
 }
 
 Queues rand_sample(int64_t n, int64_t m, std::mt19937 &rng) {

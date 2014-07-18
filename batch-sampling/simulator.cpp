@@ -7,6 +7,7 @@
 
 #include "./simulator.h"
 #include <cassert>
+#include <vector>
 #include "./common.h"
 
 Simulator::Simulator() {

@@ -9,6 +9,7 @@
 #include <cassert>
 #include <algorithm>
 #include <cmath>
+#include "/usr/local/include/prettyprint.hpp"
 #include "./cluster.h"
 
 Scheduler::Scheduler() {
@@ -64,7 +65,8 @@ Queues bswf(const Queues &queue, int64_t num_to_fill, std::mt19937 &rng) {
     for (int64_t i = 0; i < queue.size(); ++i) {
         if (queue[i] < water_level) {
             ++gainer_index;
-            if (gainer_index == big_gainer[current_big_gainer_index]) {
+            if (current_big_gainer_index < big_gainer.size() &&
+                gainer_index == big_gainer[current_big_gainer_index]) {
                 queue_after[i] = water_level;
                 ++current_big_gainer_index;
             } else {
@@ -90,8 +92,9 @@ Queues bs(const Queues &queue, int64_t num_to_fill, std::mt19937 &rng) {
     // first_applicant_index is the index of the first queue with length exactly
     // equal to qualifying_line.
     int64_t first_applicant_index = num_to_fill-1;
-    while (sorted_queue[first_applicant_index] == sorted_queue[num_to_fill-1] &&
-           first_applicant_index > 0) {
+    while (first_applicant_index > 0 &&
+           sorted_queue[first_applicant_index-1] ==
+           sorted_queue[num_to_fill-1]) {
         --first_applicant_index;
     }
     num_openings = num_to_fill-first_applicant_index;
@@ -116,7 +119,7 @@ Queues bs(const Queues &queue, int64_t num_to_fill, std::mt19937 &rng) {
     for (int64_t i = 0; i < queue.size(); ++i) {
         if (queue[i] < qualifying_line) {
             ++queue_after[i];
-        } else if (queue[i] == qualifying_line) {
+        } else if (offer_index < num_openings && queue[i] == qualifying_line) {
             ++applicant_index;
             if (applicant_index == offers[offer_index]) {
                 ++queue_after[i];

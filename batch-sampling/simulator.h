@@ -8,19 +8,19 @@
 #ifndef BATCH_SAMPLING_SIMULATOR_H_
 #define BATCH_SAMPLING_SIMULATOR_H_
 
-#include <vector>
-#include <random>
 #include <cstdint>
+#include <random>
+#include <vector>
 #include "./cluster.h"
 
 class Simulator {
-public:
+public:  // NOLINT
     Simulator();
     // r is the probe ratio.
     void init(int64_t n, double a, int64_t b, double t, double r);
-    void arrive(std::mt19937 &rng);
-    void depart(std::mt19937 &rng);
-private:
+    void arrive(std::mt19937 &rng);  // NOLINT
+    void depart(std::mt19937 &rng);  // NOLINT
+private:  // NOLINT
     int64_t num_servers_;
     double arrival_rate_per_server_;
     int64_t batch_size_;

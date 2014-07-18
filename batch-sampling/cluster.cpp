@@ -6,10 +6,13 @@
 //
 
 #include "./cluster.h"
-#include <cassert>
 #include <random>
+#include <cassert>
 #include <set>
 #include <cmath>
+#include <iostream>  // NOLINT
+#include <algorithm>
+#include "/usr/local/include/prettyprint.hpp"
 
 Cluster::Cluster() {
     scheduler_ = Scheduler();
@@ -31,21 +34,39 @@ int Cluster::init(int64_t n, int64_t b, Policy p, double r, double t) {
     return 0;
 }
 
-void Cluster::arrive(std::mt19937 &rng) {
+void Cluster::arrive(std::mt19937 &rng) {  // NOLINT
     int64_t num_probed_servers = std::llrint(batch_size_*
                                              scheduler_.probe_ratio());
     assert(num_probed_servers >= 0);
     assert(num_probed_servers <= num_servers_);
-    Queues probed_server = rand_sample(num_servers_, num_probed_servers, rng);
-    //TODO: assign m customers onto the probed servers according to policy.
+    // rand_sample returns ascending vector, so further randomization is done.
+    Queues probed_servers = rand_sample(num_servers_, num_probed_servers, rng);
+    std::shuffle(probed_servers.begin(), probed_servers.end(), rng);
+    Queues probed_queues;
+    for (int i = 0; i < probed_servers.size(); ++i) {
+        // Base of probed_servers is 1.
+        probed_queues.push_back(queue_length_[probed_servers[i]-1]);
+    }
+    Queues filled_queues;
+    if (scheduler_.policy() == MIT) {
+        filled_queues = mit(probed_queues, batch_size_,
+                            scheduler_.probe_ratio(), rng);
+    } else if (scheduler_.policy() == BS) {
+        filled_queues = bs(probed_queues, batch_size_, rng);
+    } else if (scheduler_.policy() == BSWF) {
+        filled_queues = bswf(probed_queues, batch_size_, rng);
+    }
+    for (int i = 0; i < probed_servers.size(); ++i) {
+        queue_length_[probed_servers[i]-1] = filled_queues[i];
+    }
 }
 
-void Cluster::depart(std::mt19937 &rng) {
-    //TODO: generate Bernoulli random variables.
-    //TODO: depart.
+void Cluster::depart(std::mt19937 &rng) {  // NOLINT
+    // TODO(Veggente): generate Bernoulli random variables.
+    // TODO(Veggente): depart.
 }
 
-Queues rand_sample(int64_t n, int64_t m, std::mt19937 &rng) {
+Queues rand_sample(int64_t n, int64_t m, std::mt19937 &rng) {  // NOLINT
     assert(n >= m);
     std::uniform_int_distribution<int64_t> dis(1, n);
     std::set<int64_t> chosen_set;

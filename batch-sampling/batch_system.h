@@ -9,14 +9,14 @@
 #define BATCH_SAMPLING_BATCH_SYSTEM_H_
 
 #include <cstdint>
-#include "controller.h"
-#include "simulator.h"
+#include "./controller.h"
+#include "./simulator.h"
 
 class BatchSystem {
-public:
+public:  // NOLINT
     BatchSystem();
     void init(int64_t n, double a, double arr_pr, double total_time, double r);
-private:
+private:  // NOLINT
     Controller controller_;
     Simulator simulator_;
 };

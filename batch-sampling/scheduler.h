@@ -11,7 +11,8 @@
 #include <random>
 #include "./common.h"
 
-//TODO: use iterator arguments to allow sampling partial queues to speed up mit.
+// TODO(Veggente): use iterator arguments to allow sampling partial queues to
+// speed up mit.
 // Batch sampling with water filling algorithm.
 Queues bswf(const Queues &queue, int64_t num_to_fill, std::mt19937 &rng);
 // Batch sampling without water filling algorithm.
@@ -21,11 +22,12 @@ Queues mit(const Queues &queue, int64_t num_to_fill, double probe_ratio,
            std::mt19937 &rng);
 
 class Scheduler {
-public:
+public:  // NOLINT
     Scheduler();
     Scheduler(Policy p, double r);
     double probe_ratio() const {return probe_ratio_;}
-private:
+    Policy policy() const {return policy_;}
+private:  // NOLINT
     Policy policy_;
     double probe_ratio_;
 };

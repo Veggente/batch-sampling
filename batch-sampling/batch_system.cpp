@@ -5,7 +5,7 @@
 //  Copyright (c) 2014 Xiaohan Kang. All rights reserved.
 //
 
-#include "batch_system.h"
+#include "./batch_system.h"
 
 BatchSystem::BatchSystem() {
     controller_ = Controller();

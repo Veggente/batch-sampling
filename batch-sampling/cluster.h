@@ -8,22 +8,23 @@
 #ifndef BATCH_SAMPLING_CLUSTER_H_
 #define BATCH_SAMPLING_CLUSTER_H_
 
+#include <cstdint>
 #include <random>
 #include <vector>
-#include <cstdint>
 #include <cassert>
 #include "./scheduler.h"
 #include "./common.h"
 
-Queues rand_sample(int64_t n, int64_t m, std::mt19937 &rng);
+Queues rand_sample(int64_t n, int64_t m, std::mt19937 &rng);  // NOLINT
 
 class Cluster {
-public:
+public:  // NOLINT
     Cluster();
     int init(int64_t n, int64_t b, Policy p, double r, double t);
-    void arrive(std::mt19937 &rng);
-    void depart(std::mt19937 &rng);
-private:
+    void arrive(std::mt19937 &rng);  // NOLINT
+    void depart(std::mt19937 &rng);  // NOLINT
+    Queues queue_length() const {return queue_length_;}
+private:  // NOLINT
     Queues queue_length_;
     Scheduler scheduler_;
     double time_slot_length_;

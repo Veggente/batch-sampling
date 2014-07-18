@@ -42,6 +42,7 @@ void Cluster::arrive(std::mt19937 &rng) {  // NOLINT
     // rand_sample returns ascending vector, so further randomization is done.
     Queues probed_servers = rand_sample(num_servers_, num_probed_servers, rng);
     std::shuffle(probed_servers.begin(), probed_servers.end(), rng);
+    std::cout << "Probed servers are: " << probed_servers << std::endl;
     Queues probed_queues;
     for (int i = 0; i < probed_servers.size(); ++i) {
         // Base of probed_servers is 1.
@@ -62,8 +63,14 @@ void Cluster::arrive(std::mt19937 &rng) {  // NOLINT
 }
 
 void Cluster::depart(std::mt19937 &rng) {  // NOLINT
-    // TODO(Veggente): generate Bernoulli random variables.
-    // TODO(Veggente): depart.
+    // time_slot_length_ is the parameter of the Bernoulli service since the
+    // service rate is 1.
+    std::bernoulli_distribution bern(time_slot_length_);
+    for (int64_t i = 0; i < num_servers_; ++i) {
+        if (queue_length_[i] > 0 && bern(rng)) {
+            --queue_length_[i];
+        }
+    }
 }
 
 Queues rand_sample(int64_t n, int64_t m, std::mt19937 &rng) {  // NOLINT

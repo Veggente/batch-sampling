@@ -11,10 +11,14 @@
 #include <random>
 #include "./common.h"
 
+//TODO: use iterator arguments to allow sampling partial queues to speed up mit.
 // Batch sampling with water filling algorithm.
 Queues bswf(const Queues &queue, int64_t num_to_fill, std::mt19937 &rng);
 // Batch sampling without water filling algorithm.
 Queues bs(const Queues &queue, int64_t num_to_fill, std::mt19937 &rng);
+// Mitzenmacher's power-of-d-choices algorithm
+Queues mit(const Queues &queue, int64_t num_to_fill, double probe_ratio,
+           std::mt19937 &rng);
 
 class Scheduler {
 public:

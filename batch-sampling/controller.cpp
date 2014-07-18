@@ -21,7 +21,7 @@ Controller::Controller() {
 void Controller::init(int64_t n, double a, double arr_pr, double total_time,
                       double r) {
     num_servers_ = n;
-    batch_size_ = llrint(std::log2(num_servers_));
+    batch_size_ = std::llrint(std::log2(num_servers_));
     arrival_rate_per_server_ = a;
     arrival_probability_ = arr_pr;
     time_slot_length_ = arrival_probability_*batch_size_/num_servers_

@@ -8,7 +8,7 @@
 #include "./scheduler.h"
 #include <cassert>
 #include <algorithm>
-#include <iostream>
+#include <cmath>
 #include "./cluster.h"
 
 Scheduler::Scheduler() {
@@ -123,6 +123,27 @@ Queues bs(const Queues &queue, int64_t num_to_fill, std::mt19937 &rng) {
                 ++offer_index;
             }
         }
+    }
+    return queue_after;
+}
+
+Queues mit(const Queues &queue, int64_t num_to_fill, double probe_ratio,
+           std::mt19937 &rng) {
+    assert(num_to_fill > 0);
+    int probe_ratio_int = std::rint(probe_ratio);
+    assert(queue.size() == num_to_fill*probe_ratio_int);
+    Queues queue_after;
+    Queues temp_queue;
+    Queues temp_queue_after;
+    for (int i = 0; i < num_to_fill; ++i) {
+        // Copy part of queue to temp_queue.
+        temp_queue.assign(queue.begin()+i*probe_ratio_int,
+                          queue.begin()+(i+1)*probe_ratio_int);
+        // Do BSWF with num_to_fill == 1.
+        temp_queue_after = bswf(temp_queue, 1, rng);
+        // Push the results to the back of queue_after.
+        queue_after.insert(queue_after.end(), temp_queue_after.begin(),
+                           temp_queue_after.end());
     }
     return queue_after;
 }

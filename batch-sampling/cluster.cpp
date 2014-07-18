@@ -32,7 +32,8 @@ int Cluster::init(int64_t n, int64_t b, Policy p, double r, double t) {
 }
 
 void Cluster::arrive(std::mt19937 &rng) {
-    int64_t num_probed_servers = llrint(batch_size_*scheduler_.probe_ratio());
+    int64_t num_probed_servers = std::llrint(batch_size_*
+                                             scheduler_.probe_ratio());
     assert(num_probed_servers >= 0);
     assert(num_probed_servers <= num_servers_);
     Queues probed_server = rand_sample(num_servers_, num_probed_servers, rng);

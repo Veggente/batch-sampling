@@ -11,6 +11,7 @@
 #include <cstdint>
 #include <random>
 #include <vector>
+#include <string>
 #include "./cluster.h"
 
 class Simulator {
@@ -20,6 +21,7 @@ public:  // NOLINT
     void init(int64_t n, double a, int64_t b, double t, double r);
     void arrive(std::mt19937 &rng);  // NOLINT
     void depart(std::mt19937 &rng);  // NOLINT
+    void log_queues(const std::string &filename_prefix);
 private:  // NOLINT
     int64_t num_servers_;
     double arrival_rate_per_server_;

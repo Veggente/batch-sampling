@@ -12,6 +12,8 @@
 #include <cmath>
 #include <iostream>  // NOLINT
 #include <algorithm>
+#include <fstream>
+#include "enum_parser.h"
 #include "/usr/local/include/prettyprint.hpp"
 
 Cluster::Cluster() {
@@ -42,7 +44,6 @@ void Cluster::arrive(std::mt19937 &rng) {  // NOLINT
     // rand_sample returns ascending vector, so further randomization is done.
     Queues probed_servers = rand_sample(num_servers_, num_probed_servers, rng);
     std::shuffle(probed_servers.begin(), probed_servers.end(), rng);
-    std::cout << "Probed servers are: " << probed_servers << std::endl;
     Queues probed_queues;
     for (int i = 0; i < probed_servers.size(); ++i) {
         // Base of probed_servers is 1.
@@ -71,6 +72,27 @@ void Cluster::depart(std::mt19937 &rng) {  // NOLINT
             --queue_length_[i];
         }
     }
+}
+
+std::string Cluster::suffix() {
+    EnumParser<Policy> parser_policy;
+    std::string s = parser_policy.enum_to_string(scheduler_.policy())+"_"
+                    +std::to_string(scheduler_.probe_ratio());
+    return s;
+}
+
+void Cluster::log_queues(const std::string &filename) {
+    std::ofstream out(filename, std::ofstream::app);
+    if (!out) {
+        std::cerr << "Error: could not open file " << filename << "!"
+            << std::endl;
+        exit(1);
+    }
+    for (auto i : queue_length_) {
+        out << i << " ";
+    }
+    out << std::endl;
+    out.close();
 }
 
 Queues rand_sample(int64_t n, int64_t m, std::mt19937 &rng) {  // NOLINT

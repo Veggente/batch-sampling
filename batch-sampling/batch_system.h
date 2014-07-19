@@ -16,6 +16,8 @@ class BatchSystem {
 public:  // NOLINT
     BatchSystem();
     void init(int64_t n, double a, double arr_pr, double total_time, double r);
+    void run(std::mt19937 &rng);  // NOLINT
+    void show_config();
 private:  // NOLINT
     Controller controller_;
     Simulator simulator_;

@@ -26,4 +26,16 @@ void Controller::init(int64_t n, double a, double arr_pr, double total_time,
     arrival_probability_ = arr_pr;
     time_slot_length_ = arrival_probability_*batch_size_/num_servers_
         /arrival_rate_per_server_;
+    total_time_ = total_time;
+    probe_ratio_ = r;
+}
+
+std::string Controller::prefix() const {
+    std::string s = "queues_n"+std::to_string(num_servers_)
+                    +"_b"+std::to_string(batch_size_)
+                    +"_a"+std::to_string(arrival_rate_per_server_)
+                    +"_p"+std::to_string(arrival_probability_)
+                    +"_t"+std::to_string(total_time_)
+                    +"_r"+std::to_string(probe_ratio_);
+    return s;
 }

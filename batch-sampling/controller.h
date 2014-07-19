@@ -9,6 +9,7 @@
 #define BATCH_SAMPLING_CONTROLLER_H_
 
 #include <cstdint>
+#include <string>
 
 class Controller {
 public:  // NOLINT
@@ -19,6 +20,12 @@ public:  // NOLINT
     double arrival_rate_per_server() const {return arrival_rate_per_server_;}
     double time_slot_length() const {return time_slot_length_;}
     double probe_ratio() const {return probe_ratio_;}
+    double total_time() const {return total_time_;}
+    int num_time_slots() const {return static_cast<int>(total_time_
+                                                        /time_slot_length_);}
+    double arrival_probability() const {return arrival_probability_;}
+    // TODO(Veggente): fewer precision for doubles.
+    std::string prefix() const;
 private:  // NOLINT
     int64_t num_servers_;
     int64_t batch_size_;

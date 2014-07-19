@@ -12,6 +12,7 @@
 #include <random>
 #include <vector>
 #include <cassert>
+#include <string>
 #include "./scheduler.h"
 #include "./common.h"
 
@@ -24,6 +25,8 @@ public:  // NOLINT
     void arrive(std::mt19937 &rng);  // NOLINT
     void depart(std::mt19937 &rng);  // NOLINT
     Queues queue_length() const {return queue_length_;}
+    std::string suffix();
+    void log_queues(const std::string &filename);
 private:  // NOLINT
     Queues queue_length_;
     Scheduler scheduler_;

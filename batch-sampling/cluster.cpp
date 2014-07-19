@@ -45,7 +45,7 @@ void Cluster::arrive(std::mt19937 &rng) {  // NOLINT
     Queues probed_servers = rand_sample(num_servers_, num_probed_servers, rng);
     std::shuffle(probed_servers.begin(), probed_servers.end(), rng);
     Queues probed_queues;
-    for (int i = 0; i < probed_servers.size(); ++i) {
+    for (int i = 0; i < static_cast<int>(probed_servers.size()); ++i) {
         // Base of probed_servers is 1.
         probed_queues.push_back(queue_length_[probed_servers[i]-1]);
     }
@@ -58,7 +58,7 @@ void Cluster::arrive(std::mt19937 &rng) {  // NOLINT
     } else if (scheduler_.policy() == BSWF) {
         filled_queues = bswf(probed_queues, batch_size_, rng);
     }
-    for (int i = 0; i < probed_servers.size(); ++i) {
+    for (int i = 0; i < static_cast<int>(probed_servers.size()); ++i) {
         queue_length_[probed_servers[i]-1] = filled_queues[i];
     }
 }
@@ -99,10 +99,10 @@ Queues rand_sample(int64_t n, int64_t m, std::mt19937 &rng) {  // NOLINT
     assert(n >= m);
     std::uniform_int_distribution<int64_t> dis(1, n);
     std::set<int64_t> chosen_set;
-    while (chosen_set.size() < m) {
+    while (static_cast<int>(chosen_set.size()) < m) {
         chosen_set.insert(dis(rng));
     }
-    assert(chosen_set.size() == m);
+    assert(static_cast<int>(chosen_set.size()) == m);
     Queues sampled_vector(chosen_set.begin(), chosen_set.end());
     return sampled_vector;
 }

@@ -43,7 +43,7 @@ Queues bswf(const Queues &queue, int64_t num_to_fill, std::mt19937 &rng) {
         ++water_level;
         // Find the number of gainers for the current water level.
         while (sorted_queue[num_gainers] < water_level &&
-               num_gainers < queue.size()) {
+               num_gainers < static_cast<int64_t>(queue.size())) {
             ++num_gainers;
         }
         // Current water level is the actual water level if water in num_to_fill
@@ -61,10 +61,11 @@ Queues bswf(const Queues &queue, int64_t num_to_fill, std::mt19937 &rng) {
     int64_t gainer_index = 0;
     int64_t current_big_gainer_index = 0;
     Queues queue_after = queue;
-    for (int64_t i = 0; i < queue.size(); ++i) {
+    for (int64_t i = 0; i < static_cast<int64_t>(queue.size()); ++i) {
         if (queue[i] < water_level) {
             ++gainer_index;
-            if (current_big_gainer_index < big_gainer.size() &&
+            if (current_big_gainer_index <
+                static_cast<int64_t>(big_gainer.size()) &&
                 gainer_index == big_gainer[current_big_gainer_index]) {
                 queue_after[i] = water_level;
                 ++current_big_gainer_index;
@@ -78,7 +79,7 @@ Queues bswf(const Queues &queue, int64_t num_to_fill, std::mt19937 &rng) {
 
 Queues bs(const Queues &queue, int64_t num_to_fill, std::mt19937 &rng) {
     assert(!queue.empty());
-    assert(queue.size() >= num_to_fill);
+    assert(static_cast<int64_t>(queue.size()) >= num_to_fill);
     assert(num_to_fill > 0);
     // Sort the queue by length.
     Queues sorted_queue = queue;
@@ -103,7 +104,7 @@ Queues bs(const Queues &queue, int64_t num_to_fill, std::mt19937 &rng) {
     int64_t last_applicant_index = num_to_fill-1;  // initialization
     // The first condition must come first because if the first condition does
     // not hold, the second will overflow.
-    while (last_applicant_index < queue.size()-1 &&
+    while (last_applicant_index < static_cast<int64_t>(queue.size())-1 &&
            sorted_queue[last_applicant_index+1] ==
            sorted_queue[num_to_fill-1]) {
         ++last_applicant_index;
@@ -115,7 +116,7 @@ Queues bs(const Queues &queue, int64_t num_to_fill, std::mt19937 &rng) {
     int64_t applicant_index = 0;
     int64_t offer_index = 0;
     Queues queue_after = queue;
-    for (int64_t i = 0; i < queue.size(); ++i) {
+    for (int64_t i = 0; i < static_cast<int64_t>(queue.size()); ++i) {
         if (queue[i] < qualifying_line) {
             ++queue_after[i];
         } else if (offer_index < num_openings && queue[i] == qualifying_line) {
@@ -133,7 +134,7 @@ Queues mit(const Queues &queue, int64_t num_to_fill, double probe_ratio,
            std::mt19937 &rng) {
     assert(num_to_fill > 0);
     int probe_ratio_int = std::rint(probe_ratio);
-    assert(queue.size() == num_to_fill*probe_ratio_int);
+    assert(static_cast<int64_t>(queue.size()) == num_to_fill*probe_ratio_int);
     Queues queue_after;
     Queues temp_queue;
     Queues temp_queue_after;

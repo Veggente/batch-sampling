@@ -40,20 +40,20 @@ void Simulator::arrive(std::mt19937 &rng) {  // NOLINT
                                  *time_slot_length_/batch_size_;
     std::bernoulli_distribution bern(arrival_probability);
     if (bern(rng)) {
-        for (int i = 0; i < cluster_.size(); ++i) {
+        for (int i = 0; i < static_cast<int>(cluster_.size()); ++i) {
             cluster_[i].arrive(rng);
         }
     }
 }
 
 void Simulator::depart(std::mt19937 &rng) {  // NOLINT
-    for (int i = 0; i < cluster_.size(); ++i) {
+    for (int i = 0; i < static_cast<int>(cluster_.size()); ++i) {
         cluster_[i].depart(rng);
     }
 }
 
 void Simulator::log_queues(const std::string &filename_prefix) {
-    for (int i = 0; i < cluster_.size(); ++i) {
+    for (int i = 0; i < static_cast<int>(cluster_.size()); ++i) {
         // Use scheduler-specific suffix combined with the prefix.
         std::string filename = filename_prefix+"_"+cluster_[i].suffix();
         cluster_[i].log_queues(filename);

@@ -28,6 +28,7 @@ void BatchSystem::run(std::mt19937 &rng) {  // NOLINT
         simulator_.depart(rng);
         // TODO(Veggente): possible speedup by generating filename once for all.
         simulator_.log_queues(controller_.prefix());
+        controller_.progress_bar(i);
     }
 }
 

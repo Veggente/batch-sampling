@@ -8,6 +8,8 @@
 #include "./controller.h"
 #include <cmath>
 #include <string>
+#include <iostream>  // NOLINT
+#include "./common.h"
 
 Controller::Controller() {
     num_servers_ = 0;
@@ -39,4 +41,15 @@ std::string Controller::prefix() const {
                     +"_t"+std::to_string(total_time_)
                     +"_r"+std::to_string(probe_ratio_);
     return s;
+}
+
+void Controller::progress_bar(int time_slot) {
+    if (time_slot == num_time_slots()-1) {
+        // Spaces are for covering the previous display.
+        std::cout << "\rDone!           " << std::endl;
+    } else if (time_slot*kAHundred/num_time_slots() !=
+               (time_slot-1)*kAHundred/num_time_slots()) {
+        std::cout << "\r" << time_slot*kAHundred/num_time_slots()
+                  << "% completed." << std::flush;
+    }
 }

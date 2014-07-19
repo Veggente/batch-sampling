@@ -26,6 +26,7 @@ public:  // NOLINT
     double arrival_probability() const {return arrival_probability_;}
     // TODO(Veggente): fewer precision for doubles.
     std::string prefix() const;
+    void progress_bar(int time_slot);
 private:  // NOLINT
     int64_t num_servers_;
     int64_t batch_size_;

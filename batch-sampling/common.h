@@ -20,5 +20,6 @@ enum Policy {
 typedef std::vector<int64_t> Queues;
 
 const int kNumInputArguments = 5;
+const int kAHundred = 100;
 
 #endif  // BATCH_SAMPLING_COMMON_H_

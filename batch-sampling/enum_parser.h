@@ -10,7 +10,7 @@
 
 #include <string>
 #include <map>
-#include <iostream>
+#include <iostream>  // NOLINT
 #include "./common.h"
 
 template <typename ENUM>

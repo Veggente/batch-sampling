@@ -12,8 +12,9 @@
 #include <cmath>
 #include <iostream>  // NOLINT
 #include <algorithm>
-#include <fstream>
-#include "enum_parser.h"
+#include <fstream>  // NOLINT
+#include <string>
+#include "./enum_parser.h"
 
 Cluster::Cluster() {
     scheduler_ = Scheduler();

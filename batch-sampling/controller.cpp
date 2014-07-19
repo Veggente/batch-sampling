@@ -7,6 +7,7 @@
 
 #include "./controller.h"
 #include <cmath>
+#include <string>
 
 Controller::Controller() {
     num_servers_ = 0;

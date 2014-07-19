@@ -9,6 +9,7 @@
 #include <random>
 #include <cassert>
 #include <vector>
+#include <string>
 #include "./common.h"
 
 Simulator::Simulator() {

@@ -9,7 +9,6 @@
 #include <cassert>
 #include <algorithm>
 #include <cmath>
-#include "/usr/local/include/prettyprint.hpp"
 #include "./cluster.h"
 
 Scheduler::Scheduler() {

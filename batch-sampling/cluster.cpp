@@ -14,7 +14,6 @@
 #include <algorithm>
 #include <fstream>
 #include "enum_parser.h"
-#include "/usr/local/include/prettyprint.hpp"
 
 Cluster::Cluster() {
     scheduler_ = Scheduler();

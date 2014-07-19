@@ -19,4 +19,6 @@ enum Policy {
 
 typedef std::vector<int64_t> Queues;
 
+const int kNumInputArguments = 5;
+
 #endif  // BATCH_SAMPLING_COMMON_H_

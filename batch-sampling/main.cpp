@@ -28,6 +28,7 @@ int main(int argc, const char * argv[]) {
     double total_time = std::stod(total_time_str);
     double probe_ratio = std::stod(probe_ratio_str);
     bs.init(num_servers, arrival_rate, arrival_prob, total_time, probe_ratio);
+    bs.show_config();
     std::mt19937 rng(0);
     bs.run(rng);
     return 0;

@@ -59,6 +59,15 @@ void Cluster::arrive(std::mt19937 &rng) {  // NOLINT
         filled_queues = bswf(probed_queues, batch_size_, rng);
     }
     for (int i = 0; i < static_cast<int>(probed_servers.size()); ++i) {
+        for (int64_t j = queue_length_[probed_servers[i]-1]+1;
+             j <= filled_queues[i]; ++j) {
+            auto it = num_servers_queue_at_least_.find(j);
+            if (it == num_servers_queue_at_least_.end()) {
+                num_servers_queue_at_least_[j] = 1;
+            } else {
+                ++it->second;
+            }
+        }
         queue_length_[probed_servers[i]-1] = filled_queues[i];
     }
 }
@@ -68,7 +77,15 @@ void Cluster::depart(std::mt19937 &rng) {  // NOLINT
     // service rate is 1.
     std::bernoulli_distribution bern(time_slot_length_);
     for (int64_t i = 0; i < num_servers_; ++i) {
-        if (queue_length_[i] > 0 && bern(rng)) {
+        int64_t this_length = queue_length_[i];
+        if (this_length > 0 && bern(rng)) {
+            assert(num_servers_queue_at_least_.find(this_length) !=
+                   num_servers_queue_at_least_.end());
+            if (num_servers_queue_at_least_[this_length] == 1) {
+                num_servers_queue_at_least_.erase(this_length);
+            } else {
+                --num_servers_queue_at_least_[this_length];
+            }
             --queue_length_[i];
         }
     }
@@ -88,8 +105,8 @@ void Cluster::log_queues(const std::string &filename) {
             << std::endl;
         exit(1);
     }
-    for (auto i : queue_length_) {
-        out << i << " ";
+    for (auto i : num_servers_queue_at_least_) {
+        out << i.second << " ";
     }
     out << std::endl;
     out.close();

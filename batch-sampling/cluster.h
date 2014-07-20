@@ -13,6 +13,7 @@
 #include <vector>
 #include <cassert>
 #include <string>
+#include <map>
 #include "./scheduler.h"
 #include "./common.h"
 
@@ -33,6 +34,7 @@ private:  // NOLINT
     double time_slot_length_;
     int64_t num_servers_;
     int64_t batch_size_;
+    std::map<int64_t, int64_t> num_servers_queue_at_least_;
 };
 
 #endif  // BATCH_SAMPLING_CLUSTER_H_

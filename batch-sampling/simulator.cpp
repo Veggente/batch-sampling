@@ -35,20 +35,21 @@ void Simulator::init(int64_t n, double a, int64_t b, double t, double r) {
     }
 }
 
-void Simulator::arrive(std::mt19937 &rng) {  // NOLINT
+void Simulator::arrive(int64_t time_slot, std::mt19937 &rng) {  // NOLINT
     double arrival_probability = arrival_rate_per_server_*num_servers_
                                  *time_slot_length_/batch_size_;
     std::bernoulli_distribution bern(arrival_probability);
     if (bern(rng)) {
         for (int i = 0; i < static_cast<int>(cluster_.size()); ++i) {
-            cluster_[i].arrive(rng);
+            cluster_[i].arrive(time_slot, rng);
         }
     }
 }
 
-void Simulator::depart(std::mt19937 &rng) {  // NOLINT
+void Simulator::depart(int64_t time_slot, const std::string &filename_prefix,
+                       std::mt19937 &rng) {  // NOLINT
     for (int i = 0; i < static_cast<int>(cluster_.size()); ++i) {
-        cluster_[i].depart(rng);
+        cluster_[i].depart(time_slot, filename_prefix, rng);
     }
 }
 

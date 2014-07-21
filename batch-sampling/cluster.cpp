@@ -23,7 +23,7 @@ Cluster::Cluster() {
     batch_size_ = 0;
 }
 
-int Cluster::init(int64_t n, int64_t b, Policy p, double r, double t) {
+void Cluster::init(int64_t n, int64_t b, Policy p, double r, double t) {
     assert(n >= 0);
     num_servers_ = n;
     queue_length_ = Queues(n, 0);
@@ -33,10 +33,10 @@ int Cluster::init(int64_t n, int64_t b, Policy p, double r, double t) {
     time_slot_length_ = t;
     assert(b >= 0);
     batch_size_ = b;
-    return 0;
+    batch_queue_ = BatchQueues(n, BatchNumbers());
 }
 
-void Cluster::arrive(std::mt19937 &rng) {  // NOLINT
+void Cluster::arrive(int64_t time_slot, std::mt19937 &rng) {  // NOLINT
     int64_t num_probed_servers = std::llrint(batch_size_*
                                              scheduler_.probe_ratio());
     assert(num_probed_servers >= 0);
@@ -68,11 +68,20 @@ void Cluster::arrive(std::mt19937 &rng) {  // NOLINT
                 ++it->second;
             }
         }
+        // Copies of the batch number, i.e. time_slot, are appended at the end
+        // of batch queues.
+        batch_queue_[probed_servers[i]-1].insert(
+             batch_queue_[probed_servers[i]-1].end(),
+             filled_queues[i]-queue_length_[probed_servers[i]-1],
+             time_slot);
         queue_length_[probed_servers[i]-1] = filled_queues[i];
     }
+    assert(num_remaining_tasks_.find(time_slot) == num_remaining_tasks_.end());
+    num_remaining_tasks_[time_slot] = static_cast<int>(batch_size_);
 }
 
-void Cluster::depart(std::mt19937 &rng) {  // NOLINT
+void Cluster::depart(int64_t time_slot, const std::string &filename_prefix,
+                     std::mt19937 &rng) {  // NOLINT
     // time_slot_length_ is the parameter of the Bernoulli service since the
     // service rate is 1.
     std::bernoulli_distribution bern(time_slot_length_);
@@ -87,6 +96,18 @@ void Cluster::depart(std::mt19937 &rng) {  // NOLINT
                 --num_servers_queue_at_least_[this_length];
             }
             --queue_length_[i];
+            int64_t depart_batch_number = batch_queue_[i].front();
+            assert(num_remaining_tasks_.find(depart_batch_number) !=
+                   num_remaining_tasks_.end());
+            if (num_remaining_tasks_[depart_batch_number] == 1) {
+                // Erase map and write file.
+                num_remaining_tasks_.erase(depart_batch_number);
+                std::string filename = filename_prefix+"_"+suffix();
+                log_batch_delay(filename, depart_batch_number, time_slot);
+            } else {
+                --num_remaining_tasks_[depart_batch_number];
+            }
+            batch_queue_[i].pop_front();
         }
     }
 }
@@ -109,6 +130,18 @@ void Cluster::log_queues(const std::string &filename) {
         out << i.second << " ";
     }
     out << std::endl;
+    out.close();
+}
+
+void Cluster::log_batch_delay(const std::string &filename, int64_t arrival_time,
+                              int64_t completion_time) {
+    std::ofstream out(filename, std::ofstream::app);
+    if (!out) {
+        std::cerr << "Error: could not open file " << filename << "!"
+        << std::endl;
+        exit(1);
+    }
+    out << arrival_time << " " << completion_time << std::endl;
     out.close();
 }
 

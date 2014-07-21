@@ -24,10 +24,10 @@ void BatchSystem::init(int64_t n, double a, double arr_pr, double total_time,
 
 void BatchSystem::run(std::mt19937 &rng) {  // NOLINT
     for (int i = 0; i < controller_.num_time_slots(); ++i) {
-        simulator_.arrive(rng);
-        simulator_.depart(rng);
+        simulator_.arrive(i, rng);
+        simulator_.depart(i, "batch_delays_"+controller_.prefix(), rng);
         // TODO(Veggente): possible speedup by generating filename once for all.
-        simulator_.log_queues(controller_.prefix());
+        simulator_.log_queues("queues_"+controller_.prefix());
         controller_.progress_bar(i);
     }
 }

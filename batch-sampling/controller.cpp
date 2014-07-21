@@ -34,7 +34,7 @@ void Controller::init(int64_t n, double a, double arr_pr, double total_time,
 }
 
 std::string Controller::prefix() const {
-    std::string s = "queues_n"+std::to_string(num_servers_)
+    std::string s = "n"+std::to_string(num_servers_)
                     +"_b"+std::to_string(batch_size_)
                     +"_a"+std::to_string(arrival_rate_per_server_)
                     +"_p"+std::to_string(arrival_probability_)

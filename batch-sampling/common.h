@@ -9,6 +9,7 @@
 #define BATCH_SAMPLING_COMMON_H_
 
 #include <vector>
+#include <deque>
 
 enum Policy {
     MIT,   // Mitzenmacher's power-of-d-choices.
@@ -18,6 +19,8 @@ enum Policy {
 };
 
 typedef std::vector<int64_t> Queues;
+typedef std::deque<int64_t> BatchNumbers;
+typedef std::vector<BatchNumbers> BatchQueues;
 
 const int kNumInputArguments = 5;
 const int kAHundred = 100;

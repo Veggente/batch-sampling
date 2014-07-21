@@ -22,7 +22,7 @@ typedef std::vector<int64_t> Queues;
 typedef std::deque<int64_t> BatchNumbers;
 typedef std::vector<BatchNumbers> BatchQueues;
 
-const int kNumInputArguments = 5;
+const int kNumInputArguments = 6;
 const int kAHundred = 100;
 
 #endif  // BATCH_SAMPLING_COMMON_H_

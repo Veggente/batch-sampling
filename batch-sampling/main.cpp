@@ -21,13 +21,16 @@ int main(int argc, const char * argv[]) {
     std::string arrival_prob_str(argv[3]);
     std::string total_time_str(argv[4]);
     std::string probe_ratio_str(argv[5]);
+    std::string mit_indicator_str(argv[6]);
     BatchSystem bs;
     int64_t num_servers = std::stoll(num_servers_str);
     double arrival_rate = std::stod(arrival_rate_str);
     double arrival_prob = std::stod(arrival_prob_str);
     double total_time = std::stod(total_time_str);
     double probe_ratio = std::stod(probe_ratio_str);
-    bs.init(num_servers, arrival_rate, arrival_prob, total_time, probe_ratio);
+    int mit_indicator = std::stoi(mit_indicator_str);
+    bs.init(num_servers, arrival_rate, arrival_prob, total_time, probe_ratio,
+            mit_indicator);
     bs.show_config();
     std::mt19937 rng(0);
     bs.run(rng);

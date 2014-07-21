@@ -80,7 +80,7 @@ void Cluster::arrive(int64_t time_slot, std::mt19937 &rng) {  // NOLINT
     num_remaining_tasks_[time_slot] = static_cast<int>(batch_size_);
 }
 
-void Cluster::depart(int64_t time_slot, const std::string &filename_prefix,
+void Cluster::depart(int64_t time_slot, const std::string &filename_infix,
                      std::mt19937 &rng) {  // NOLINT
     // time_slot_length_ is the parameter of the Bernoulli service since the
     // service rate is 1.
@@ -100,14 +100,18 @@ void Cluster::depart(int64_t time_slot, const std::string &filename_prefix,
             assert(num_remaining_tasks_.find(depart_batch_number) !=
                    num_remaining_tasks_.end());
             if (num_remaining_tasks_[depart_batch_number] == 1) {
-                // Erase map and write file.
+                // Erase map and record batch delay.
                 num_remaining_tasks_.erase(depart_batch_number);
-                std::string filename = filename_prefix+"_"+suffix();
-                log_batch_delay(filename, depart_batch_number, time_slot);
+                std::string filename = "batch_delays_"+filename_infix+"_"
+                                       +suffix();
+                log_delay(filename, depart_batch_number, time_slot);
             } else {
                 --num_remaining_tasks_[depart_batch_number];
             }
             batch_queue_[i].pop_front();
+            // Record task delay.
+            std::string filename = "task_delays_"+filename_infix+"_"+suffix();
+            log_delay(filename, depart_batch_number, time_slot);
         }
     }
 }
@@ -133,7 +137,7 @@ void Cluster::log_queues(const std::string &filename) {
     out.close();
 }
 
-void Cluster::log_batch_delay(const std::string &filename, int64_t arrival_time,
+void Cluster::log_delay(const std::string &filename, int64_t arrival_time,
                               int64_t completion_time) {
     std::ofstream out(filename, std::ofstream::app);
     if (!out) {

@@ -33,7 +33,7 @@ void Controller::init(int64_t n, double a, double arr_pr, double total_time,
     probe_ratio_ = r;
 }
 
-std::string Controller::prefix() const {
+std::string Controller::infix() const {
     std::string s = "n"+std::to_string(num_servers_)
                     +"_b"+std::to_string(batch_size_)
                     +"_a"+std::to_string(arrival_rate_per_server_)

@@ -32,6 +32,7 @@ void BatchSystem::run(std::mt19937 &rng) {  // NOLINT
     }
 }
 
+// TODO(Veggente): should migrate to Controller.
 void BatchSystem::show_config() {
     std::cout << "===========Config===========" << std::endl;
     std::cout << "Number of servers: " << controller_.num_servers() << std::endl

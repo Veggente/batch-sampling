@@ -166,3 +166,6 @@ batch-sampling/batch_sampling.1
 xcuserdata
 batch-sampling.xcodeproj/
 *.txt
+script/queues*
+script/task_delays*
+script/batch_delays*

@@ -22,6 +22,15 @@ void BatchSystem::init(int64_t n, double a, double arr_pr, double total_time,
                     controller_.probe_ratio(), mit_indicator);
 }
 
+void BatchSystem::init(int64_t n, int64_t b, double a, double arr_pr,
+                       double total_time, double r, int mit_indicator) {
+    controller_.init(n, b, a, arr_pr, total_time, r);
+    simulator_.init(controller_.num_servers(),
+                    controller_.arrival_rate_per_server(),
+                    controller_.batch_size(), controller_.time_slot_length(),
+                    controller_.probe_ratio(), mit_indicator);
+}
+
 void BatchSystem::run(std::mt19937 &rng) {  // NOLINT
     for (int i = 0; i < controller_.num_time_slots(); ++i) {
         simulator_.arrive(i, rng);

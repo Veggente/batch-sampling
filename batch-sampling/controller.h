@@ -15,6 +15,8 @@ class Controller {
 public:  // NOLINT
     Controller();
     void init(int64_t n, double a, double arr_pr, double total_time, double r);
+    void init(int64_t n, int64_t b, double a, double arr_pr, double total_time,
+              double r);
     int64_t num_servers() const {return num_servers_;}
     int64_t batch_size() const {return batch_size_;}
     double arrival_rate_per_server() const {return arrival_rate_per_server_;}

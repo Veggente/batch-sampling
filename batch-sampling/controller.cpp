@@ -33,6 +33,18 @@ void Controller::init(int64_t n, double a, double arr_pr, double total_time,
     probe_ratio_ = r;
 }
 
+void Controller::init(int64_t n, int64_t b, double a, double arr_pr,
+                      double total_time, double r) {
+    num_servers_ = n;
+    batch_size_ = b;
+    arrival_rate_per_server_ = a;
+    arrival_probability_ = arr_pr;
+    time_slot_length_ = arrival_probability_*batch_size_/num_servers_
+    /arrival_rate_per_server_;
+    total_time_ = total_time;
+    probe_ratio_ = r;
+}
+
 std::string Controller::infix() const {
     std::string s = "n"+std::to_string(num_servers_)
                     +"_b"+std::to_string(batch_size_)

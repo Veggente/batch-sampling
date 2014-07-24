@@ -169,3 +169,7 @@ batch-sampling.xcodeproj/
 script/queues*
 script/task_delays*
 script/batch_delays*
+script/*.mat
+script/*.fig
+script/*.eps
+script/*.tar.gz

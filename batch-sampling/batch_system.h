@@ -17,6 +17,8 @@ public:  // NOLINT
     BatchSystem();
     void init(int64_t n, double a, double arr_pr, double total_time, double r,
               int mit_indicator);
+    void init(int64_t n, int64_t b, double a, double arr_pr, double total_time,
+              double r, int mit_indicator);
     void run(std::mt19937 &rng);  // NOLINT
     void show_config();
 private:  // NOLINT

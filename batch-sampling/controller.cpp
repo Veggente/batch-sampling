@@ -50,7 +50,7 @@ std::string Controller::infix() const {
                     +"_b"+std::to_string(batch_size_)
                     +"_a"+std::to_string(arrival_rate_per_server_)
                     +"_p"+std::to_string(arrival_probability_)
-                    +"_t"+std::to_string(total_time_)
+    //                    +"_t"+std::to_string(total_time_)
                     +"_r"+std::to_string(probe_ratio_);
     return s;
 }

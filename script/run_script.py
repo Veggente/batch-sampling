@@ -14,9 +14,10 @@ def main():
     mit_indicator = 1
     for n in num_servers:
         for a in arrival_rate:
-            if n == num_servers[0] or n == num_servers[3] or n == num_servers[6] or a == arrival_rate[0] or a == arrival_rate[2] or a == arrival_rate[7]:
-                total_time = exec_time(n, batch_size, a, arrival_prob)
-                os.system("nice time ./batch-sampling "+str(n)+" "+str(batch_size)+" "+str(a)+" "+str(arrival_prob)+" "+str(total_time)+" "+str(probe_ratio)+" "+str(mit_indicator))
+            total_time = exec_time(n, batch_size, a, arrival_prob)
+            os.system("nice time ./batch-sampling "+str(n)+" "+str(batch_size)
+                      +" "+str(a)+" "+str(arrival_prob)+" "+str(total_time)+" "
+                      +str(probe_ratio)+" "+str(mit_indicator))
 
 if __name__ == "__main__":
     main()

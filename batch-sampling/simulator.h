@@ -24,6 +24,7 @@ public:  // NOLINT
     void depart(int64_t time_slot, const std::string &filename_prefix,
                 std::mt19937 &rng);  // NOLINT
     void log_queues(const std::string &filename_prefix);
+    void synopsize(const std::string &filename_infix);
 private:  // NOLINT
     int64_t num_servers_;
     double arrival_rate_per_server_;

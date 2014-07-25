@@ -67,5 +67,15 @@ void Simulator::log_queues(const std::string &filename_prefix) {
         // Use scheduler-specific suffix combined with the prefix.
         std::string filename = filename_prefix+"_"+cluster_[i].suffix();
         cluster_[i].log_queues(filename);
+        cluster_[i].clock_tick();
+    }
+}
+
+void Simulator::synopsize(const std::string &filename_infix) {
+    for (int i = starting_policy_index_; i < static_cast<int>(cluster_.size());
+         ++i) {
+        // Use scheduler-specific suffix combined with the infix.
+        std::string filename_suffix = filename_infix+"_"+cluster_[i].suffix();
+        cluster_[i].synopsize(filename_suffix);
     }
 }

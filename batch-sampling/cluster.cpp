@@ -21,6 +21,11 @@ Cluster::Cluster() {
     time_slot_length_ = 1.0;
     num_servers_ = 0;
     batch_size_ = 0;
+    cumulative_batch_delay_ = 0;
+    num_batches_completed_ = 0;
+    cumulative_task_delay_ = 0;
+    num_tasks_completed_ = 0;
+    time_slot_ = 0;
 }
 
 void Cluster::init(int64_t n, int64_t b, Policy p, double r, double t) {
@@ -80,6 +85,7 @@ void Cluster::arrive(int64_t time_slot, std::mt19937 &rng) {  // NOLINT
     num_remaining_tasks_[time_slot] = static_cast<int>(batch_size_);
 }
 
+// TODO(Veggente): Use the local time slot instead of the external one.
 void Cluster::depart(int64_t time_slot, const std::string &filename_infix,
                      std::mt19937 &rng) {  // NOLINT
     // time_slot_length_ is the parameter of the Bernoulli service since the
@@ -105,6 +111,9 @@ void Cluster::depart(int64_t time_slot, const std::string &filename_infix,
                 std::string filename = "batch_delays_"+filename_infix+"_"
                                        +suffix();
                 log_delay(filename, depart_batch_number, time_slot);
+                // Maintain batch completion counter and cumulative batch delay.
+                ++num_batches_completed_;
+                cumulative_batch_delay_ += time_slot-depart_batch_number;
             } else {
                 --num_remaining_tasks_[depart_batch_number];
             }
@@ -112,6 +121,9 @@ void Cluster::depart(int64_t time_slot, const std::string &filename_infix,
             // Record task delay.
             std::string filename = "task_delays_"+filename_infix+"_"+suffix();
             log_delay(filename, depart_batch_number, time_slot);
+            // Maintain task completion counter and cumulative task delay.
+            ++num_tasks_completed_;
+            cumulative_task_delay_ += time_slot-depart_batch_number;
         }
     }
 }
@@ -142,11 +154,55 @@ void Cluster::log_delay(const std::string &filename, int64_t arrival_time,
     std::ofstream out(filename, std::ofstream::app);
     if (!out) {
         std::cerr << "Error: could not open file " << filename << "!"
-        << std::endl;
+                  << std::endl;
         exit(1);
     }
     out << arrival_time << " " << completion_time << std::endl;
     out.close();
+}
+
+void Cluster::synopsize(const std::string &filename_suffix) {
+    // Batch delay synopsis.
+    std::string filename_batch = "batch_synopsis_"+filename_suffix;
+    std::ofstream out(filename_batch, std::ofstream::app);
+    if (!out) {
+        std::cerr << "Error: could not open file " << filename_batch << "!"
+                  << std::endl;
+        exit(1);
+    }
+    out << num_batches_completed_ << " " << cumulative_batch_delay_
+        << std::endl;
+    out.close();
+    // Task delay synopsis.
+    std::string filename_task = "task_synopsis_"+filename_suffix;
+    out.open(filename_task, std::ofstream::app);
+    if (!out) {
+        std::cerr << "Error: could not open file " << filename_task << "!"
+                  << std::endl;
+        exit(1);
+    }
+    out << num_tasks_completed_ << " " << cumulative_task_delay_ << std::endl;
+    out.close();
+    // Queue length synopsis.
+    std::string filename_queue = "queue_synopsis_"+filename_suffix;
+    out.open(filename_queue, std::ofstream::app);
+    if (!out) {
+        std::cerr << "Error: could not open file " << filename_queue << "!"
+                  << std::endl;
+        exit(1);
+    }
+    out << time_slot_;
+    for (auto const &queue : cumulative_num_servers_queue_at_least_) {
+        out << " " << queue.second;
+    }
+    out << std::endl;
+}
+void Cluster::clock_tick() {
+    ++time_slot_;
+    // Maintain cumulative queues.
+    for (auto const &queue : num_servers_queue_at_least_) {
+        cumulative_num_servers_queue_at_least_[queue.first] += queue.second;
+    }
 }
 
 Queues rand_sample(int64_t n, int64_t m, std::mt19937 &rng) {  // NOLINT

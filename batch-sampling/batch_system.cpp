@@ -32,13 +32,25 @@ void BatchSystem::init(int64_t n, int64_t b, double a, double arr_pr,
 }
 
 void BatchSystem::run(std::mt19937 &rng) {  // NOLINT
-    for (int i = 0; i < controller_.num_time_slots(); ++i) {
+    int num_time_slots = controller_.num_time_slots();
+    for (int i = 0; i < num_time_slots; ++i) {
         simulator_.arrive(i, rng);
         simulator_.depart(i, controller_.infix(), rng);
         // TODO(Veggente): possible speedup by generating filename once for all.
         simulator_.log_queues("queues_"+controller_.infix());
         controller_.progress_bar(i);
+        // Output kNumSynopses-1 synopses in the middle of the simulation. The
+        // synopsis data can be used to quickly compute desired statistics
+        // without reading all the raw files.
+        if (i > 0 &&
+            i/(num_time_slots/kNumSynopses) !=
+            (i-1)/(num_time_slots/kNumSynopses) &&
+            i/(num_time_slots/kNumSynopses) < kNumSynopses) {
+            simulator_.synopsize(controller_.infix());
+        }
     }
+    // Output a final synopsis.
+    simulator_.synopsize(controller_.infix());
 }
 
 // TODO(Veggente): should migrate to Controller.

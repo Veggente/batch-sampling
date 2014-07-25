@@ -24,5 +24,6 @@ typedef std::vector<BatchNumbers> BatchQueues;
 
 const int kNumInputArguments = 7;
 const int kAHundred = 100;
+const int kNumSynopses = 10;
 
 #endif  // BATCH_SAMPLING_COMMON_H_

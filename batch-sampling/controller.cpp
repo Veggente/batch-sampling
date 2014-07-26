@@ -20,6 +20,7 @@ Controller::Controller() {
     total_time_ = 1.0;
     probe_ratio_ = 1.0;
     progress_percentage_ = 0;
+    synopsis_counter_ = 1;
 }
 
 void Controller::init(int64_t n, double a, double arr_pr, double total_time,
@@ -50,8 +51,8 @@ std::string Controller::infix() const {
     std::string s = "n"+std::to_string(num_servers_)
                     +"_b"+std::to_string(batch_size_)
                     +"_a"+std::to_string(arrival_rate_per_server_)
-                    +"_p"+std::to_string(arrival_probability_)
-    //                    +"_t"+std::to_string(total_time_)
+    //                    +"_p"+std::to_string(arrival_probability_)
+                    +"_t"+std::to_string(total_time_)
                     +"_r"+std::to_string(probe_ratio_);
     return s;
 }
@@ -70,12 +71,22 @@ void Controller::progress_bar(int time_slot) {
 void Controller::progress_bar(double time) {
     if (time/total_time_*kAHundred >
         static_cast<double>(progress_percentage_)) {
-        if (progress_percentage_ == kAHundred-1) {
+        if (progress_percentage_ == kAHundred) {
             std::cout << "\rDone!           " << std::endl;
         } else {
             std::cout << "\r" << progress_percentage_ << "% completed."
                       << std::flush;
             ++progress_percentage_;
         }
+    }
+}
+
+bool Controller::is_synopsis_time(double time) {
+    if (time/total_time_*kNumSynopses >
+        static_cast<double>(synopsis_counter_)) {
+        ++synopsis_counter_;
+        return true;
+    } else {
+        return false;
     }
 }

@@ -55,20 +55,26 @@ void BatchSystem::run(std::mt19937 &rng) {  // NOLINT
 }
 
 // TODO(Veggente): should migrate to Controller.
-void BatchSystem::show_config() {
+void BatchSystem::show_config(int log_indicator) {
     std::cout << "===========Config===========" << std::endl;
     std::cout << "Number of servers: " << controller_.num_servers() << std::endl
     << "Batch size: " << controller_.batch_size() << std::endl
     << "Arrival rate: " << controller_.arrival_rate_per_server() << std::endl
-    << "Arrival probability: " << controller_.arrival_probability() << std::endl
-    << "Time slot length: " << controller_.time_slot_length() << std::endl
+//    << "Arrival probability: " << controller_.arrival_probability()
+//    << std::endl
+//    << "Time slot length: " << controller_.time_slot_length() << std::endl
     << "Total time: " << controller_.total_time() << std::endl
     << "Probe ratio: " << controller_.probe_ratio() << std::endl
-    << "Number of time slots: " << controller_.num_time_slots() << std::endl;
+//    << "Number of time slots: " << controller_.num_time_slots() << std::endl;
+    << "Log all queues and delays: " << log_indicator << std::endl
+    << "Expected number of events: " << (controller_.arrival_rate_per_server()
+                                         /controller_.batch_size()+1)
+        *controller_.num_servers()*controller_.total_time() << std::endl;
     std::cout << "============================" << std::endl;
 }
 
-void BatchSystem::run_continuous_time(std::mt19937 &rng) {  // NOLINT
+void BatchSystem::run_continuous_time(int log_indicator,
+                                      std::mt19937 &rng) {  // NOLINT
     while (time_ < controller_.total_time()) {
         std::exponential_distribution<> arrival_dist(
             controller_.batch_arrival_rate());
@@ -82,9 +88,10 @@ void BatchSystem::run_continuous_time(std::mt19937 &rng) {  // NOLINT
         if (inter_arrival_time < inter_departure_time) {
             // Time increments.
             time_ += inter_arrival_time;
-            // TODO(Veggente): Pre-arrival queue length log.
-            simulator_.log_queues_no_clock_tick("pre_arrival_queues_"
-                                                +controller_.infix());
+            // Pre-arrival queue length log.
+            // Disabled since post-event queue length is sufficient.
+//            simulator_.log_queues_no_clock_tick("pre_arrival_queues_"
+//                                                +controller_.infix());
             // Arrival to clusters and update members.
             simulator_.arrive_continuous_time(time_, rng);
         } else {  // If departure happens, randomly choose a server to depart.
@@ -95,18 +102,23 @@ void BatchSystem::run_continuous_time(std::mt19937 &rng) {  // NOLINT
             // Randomly choose a queue to depart. Update task delay and batch
             // delay.
             simulator_.depart_single_continuous_time(time_, controller_.infix(),
-                                                     rng);
-            // TODO(Veggente): Post-departure queue length log.
-            simulator_.log_queues_no_clock_tick("post_departure_queues_"
-                                                +controller_.infix());
+                                                     rng, log_indicator);
+            // Post-departure queue length log.
+            // Disabled since post-event queue length is sufficient.
+//            simulator_.log_queues_no_clock_tick("post_departure_queues_"
+//                                                +controller_.infix());
         }
-        // TODO(Veggente): Post-event queue length log.
-        simulator_.log_queues_no_clock_tick("queues_"+controller_.infix());
+        // Post-event queue length log.
+        if (log_indicator != 0) {
+            simulator_.log_queues_no_clock_tick("queues_"+controller_.infix());
+        }
         // Clock tick.
         simulator_.clock_tick();
-        // TODO(Veggente): Output synopsis if necessary.
+        // Output synopsis if necessary.
+        if (controller_.is_synopsis_time(time_)) {
+            simulator_.synopsize_continuous_time(controller_.infix());
+        }
         // Continuous-time progress bar.
         controller_.progress_bar(time_);
     }
-    // TODO(Veggente): Final synopsis.
 }

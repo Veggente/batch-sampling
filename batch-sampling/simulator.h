@@ -28,9 +28,10 @@ public:  // NOLINT
     void arrive_continuous_time(double time, std::mt19937 &rng);  // NOLINT
     void depart_single_continuous_time(double time_,
                                        const std::string &filename_infix,
-                                       std::mt19937 &rng);
+                                       std::mt19937 &rng, int log_indicator);
     void log_queues_no_clock_tick(const std::string&fileanme_prefix);
     void clock_tick();
+    void synopsize_continuous_time(const std::string &filename_infix);
 private:  // NOLINT
     int64_t num_servers_;
     double arrival_rate_per_server_;

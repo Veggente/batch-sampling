@@ -35,10 +35,12 @@ public:  // NOLINT
     void clock_tick();
     void arrive_continuous_time(double time, std::mt19937 &rng);  // NOLINT
     void depart_single_continuous_time(double time,
-        const std::string &filename_infix, std::mt19937 &rng);
+        const std::string &filename_infix, std::mt19937 &rng,
+        int log_indicator);
     void log_delay_continuous_time(const std::string &filename,
                                    int64_t arrival_time_slot,
                                    int64_t completion_time_slot, double delay);
+    void synopsize_continuous_time(const std::string &filename_suffix);
 private:  // NOLINT
     Queues queue_length_;
     Scheduler scheduler_;
@@ -49,10 +51,14 @@ private:  // NOLINT
     BatchQueues batch_queue_;
     std::map<int64_t, int> num_remaining_tasks_;
     int64_t cumulative_batch_delay_;
+    // num_batches_completed_ is used by both discrete- and continuous-versions.
     int64_t num_batches_completed_;
     int64_t cumulative_task_delay_;
+    // num_tasks_completed_ is used by both discrete- and continuous-versions.
     int64_t num_tasks_completed_;
-    // cumulative_num_servers_queue_at_least_ is updated at clock_tick().
+    // cumulative_num_servers_queue_at_least_ is updated at clock_tick(). Both
+    // cumulative_num_servers_queue_at_least_ and time_slot_ are used in both
+    // discrete- and continuous-versions.
     std::map<int64_t, int64_t> cumulative_num_servers_queue_at_least_;
     int64_t time_slot_;
     std::map<int64_t, double> batch_arrival_time_;

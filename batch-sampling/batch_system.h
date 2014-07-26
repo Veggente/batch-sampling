@@ -20,8 +20,8 @@ public:  // NOLINT
     void init(int64_t n, int64_t b, double a, double arr_pr, double total_time,
               double r, int mit_indicator);
     void run(std::mt19937 &rng);  // NOLINT
-    void show_config();
-    void run_continuous_time(std::mt19937 &rng);  // NOLINT
+    void show_config(int log_indicator);
+    void run_continuous_time(int log_indicator, std::mt19937 &rng);  // NOLINT
 private:  // NOLINT
     Controller controller_;
     Simulator simulator_;

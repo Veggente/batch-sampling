@@ -28,10 +28,13 @@ public:  // NOLINT
     double arrival_probability() const {return arrival_probability_;}
     // TODO(Veggente): fewer precision for doubles.
     std::string infix() const;
+    // Discrete-time version progress bar.
     void progress_bar(int time_slot);
     double batch_arrival_rate() const {return arrival_rate_per_server_
         *num_servers_/batch_size_;}
+    // Continuous-time version progress bar.
     void progress_bar(double time);
+    bool is_synopsis_time(double time);
 private:  // NOLINT
     int64_t num_servers_;
     int64_t batch_size_;
@@ -41,6 +44,7 @@ private:  // NOLINT
     double total_time_;
     double probe_ratio_;
     int progress_percentage_;
+    int synopsis_counter_;
 };
 
 #endif  // BATCH_SAMPLING_CONTROLLER_H_

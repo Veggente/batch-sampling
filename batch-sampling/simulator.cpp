@@ -12,6 +12,7 @@
 #include <string>
 #include "./common.h"
 
+
 Simulator::Simulator() {
     num_servers_ = 0;
     arrival_rate_per_server_ = 1.0;
@@ -28,7 +29,7 @@ void Simulator::init(int64_t n, double a, int64_t b, double t, double r,
     arrival_rate_per_server_ = a;
     assert(b >= 0);
     batch_size_ = b;
-    assert(t > 0.0);
+    assert(t >= 0.0);
     time_slot_length_ = t;
     assert(r >= 1.0);
     cluster_ = std::vector<Cluster>(POLICY_COUNT, Cluster());
@@ -82,7 +83,6 @@ void Simulator::synopsize(const std::string &filename_infix) {
     }
 }
 
-// TODO(Veggente): Include accurate time.
 // Guaranteed arrival. A batch arrival happens.
 void Simulator::arrive_continuous_time(double time,
                                        std::mt19937 &rng) {  // NOLINT
@@ -92,13 +92,14 @@ void Simulator::arrive_continuous_time(double time,
     }
 }
 
-// TODO(Veggente): Include accurate time.
 // Potential departure at a random server.
 void Simulator::depart_single_continuous_time(double time,
-        const std::string &filename_infix, std::mt19937 &rng) {
+        const std::string &filename_infix, std::mt19937 &rng,
+        int log_indicator) {
     for (int i = starting_policy_index_; i < static_cast<int>(cluster_.size());
          ++i) {
-        cluster_[i].depart_single_continuous_time(time, filename_infix, rng);
+        cluster_[i].depart_single_continuous_time(time, filename_infix, rng,
+                                                  log_indicator);
     }
 }
 
@@ -115,5 +116,14 @@ void Simulator::clock_tick() {
     for (int i = starting_policy_index_; i < static_cast<int>(cluster_.size());
          ++i) {
         cluster_[i].clock_tick();
+    }
+}
+
+void Simulator::synopsize_continuous_time(const std::string &filename_infix) {
+    for (int i = starting_policy_index_; i < static_cast<int>(cluster_.size());
+         ++i) {
+        // Use scheduler-specific suffix combined with the infix.
+        std::string filename_suffix = filename_infix+"_"+cluster_[i].suffix();
+        cluster_[i].synopsize_continuous_time(filename_suffix);
     }
 }

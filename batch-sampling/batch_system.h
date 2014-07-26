@@ -21,9 +21,11 @@ public:  // NOLINT
               double r, int mit_indicator);
     void run(std::mt19937 &rng);  // NOLINT
     void show_config();
+    void run_continuous_time(std::mt19937 &rng);  // NOLINT
 private:  // NOLINT
     Controller controller_;
     Simulator simulator_;
+    double time_;
 };
 
 #endif  // BATCH_SAMPLING_BATCH_SYSTEM_H_

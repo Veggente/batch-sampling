@@ -35,7 +35,8 @@ int main(int argc, const char * argv[]) {
             probe_ratio, mit_indicator);
     bs.show_config();
     std::mt19937 rng(0);
-    bs.run(rng);
+//    bs.run(rng);
+    bs.run_continuous_time(rng);
     return 0;
 }
 

@@ -33,6 +33,12 @@ public:  // NOLINT
                          int64_t completion_time);
     void synopsize(const std::string &filename_suffix);
     void clock_tick();
+    void arrive_continuous_time(double time, std::mt19937 &rng);  // NOLINT
+    void depart_single_continuous_time(double time,
+        const std::string &filename_infix, std::mt19937 &rng);
+    void log_delay_continuous_time(const std::string &filename,
+                                   int64_t arrival_time_slot,
+                                   int64_t completion_time_slot, double delay);
 private:  // NOLINT
     Queues queue_length_;
     Scheduler scheduler_;
@@ -49,6 +55,9 @@ private:  // NOLINT
     // cumulative_num_servers_queue_at_least_ is updated at clock_tick().
     std::map<int64_t, int64_t> cumulative_num_servers_queue_at_least_;
     int64_t time_slot_;
+    std::map<int64_t, double> batch_arrival_time_;
+    double cumulative_batch_delay_cont_;
+    double cumulative_task_delay_cont_;
 };
 
 #endif  // BATCH_SAMPLING_CLUSTER_H_

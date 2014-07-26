@@ -26,6 +26,8 @@ Cluster::Cluster() {
     cumulative_task_delay_ = 0;
     num_tasks_completed_ = 0;
     time_slot_ = 0;
+    cumulative_batch_delay_cont_ = 0.0;
+    cumulative_task_delay_cont_ = 0.0;
 }
 
 void Cluster::init(int64_t n, int64_t b, Policy p, double r, double t) {
@@ -62,6 +64,8 @@ void Cluster::arrive(int64_t time_slot, std::mt19937 &rng) {  // NOLINT
         filled_queues = bs(probed_queues, batch_size_, rng);
     } else if (scheduler_.policy() == BSWF) {
         filled_queues = bswf(probed_queues, batch_size_, rng);
+    } else {
+        assert(false);
     }
     for (int i = 0; i < static_cast<int>(probed_servers.size()); ++i) {
         for (int64_t j = queue_length_[probed_servers[i]-1]+1;
@@ -203,6 +207,75 @@ void Cluster::clock_tick() {
     for (auto const &queue : num_servers_queue_at_least_) {
         cumulative_num_servers_queue_at_least_[queue.first] += queue.second;
     }
+}
+
+void Cluster::arrive_continuous_time(double time,
+                                     std::mt19937 &rng) {  // NOLINT
+    arrive(time_slot_, rng);
+    // Record batch arrival time.
+    assert(batch_arrival_time_.find(time_slot_) == batch_arrival_time_.end());
+    batch_arrival_time_[time_slot_] = time;
+}
+
+void Cluster::depart_single_continuous_time(double time,
+        const std::string &filename_infix, std::mt19937 &rng) {
+    // Random choose a server.
+    std::uniform_int_distribution<int64_t> unif_dist(0, num_servers_-1);
+    int64_t chosen_one = unif_dist(rng);
+    // Depart if possible.
+    assert(queue_length_[chosen_one] == batch_queue_[chosen_one].size());
+    int64_t this_length = queue_length_[chosen_one];
+    if (this_length > 0) {
+        assert(num_servers_queue_at_least_.find(this_length) !=
+               num_servers_queue_at_least_.end());
+        if (num_servers_queue_at_least_[this_length] == 1) {
+            num_servers_queue_at_least_.erase(this_length);
+        } else {
+            --num_servers_queue_at_least_[this_length];
+        }
+        --queue_length_[chosen_one];
+        int64_t depart_batch_number = batch_queue_[chosen_one].front();
+        assert(num_remaining_tasks_.find(depart_batch_number) !=
+               num_remaining_tasks_.end());
+        double delay = time-batch_arrival_time_[depart_batch_number];
+        assert(delay > 0.0);
+        if (num_remaining_tasks_[depart_batch_number] == 1) {
+            // Erase map.
+            num_remaining_tasks_.erase(depart_batch_number);
+            std::string filename = "batch_delays_"+filename_infix+"_"
+                +suffix();
+            log_delay_continuous_time(filename, depart_batch_number,
+                                      time_slot_, delay);
+            // Maintain batch completion counter and cumulative batch delay.
+            ++num_batches_completed_;
+            cumulative_batch_delay_cont_ += delay;
+        } else {
+            --num_remaining_tasks_[depart_batch_number];
+        }
+        batch_queue_[chosen_one].pop_front();
+        // Record task delay.
+        std::string filename = "task_delays_"+filename_infix+"_"+suffix();
+        log_delay_continuous_time(filename, depart_batch_number, time_slot_,
+                                  delay);
+        // Maintain task completion counter and cumulative task delay.
+        ++num_tasks_completed_;
+        cumulative_task_delay_cont_ += delay;
+    }
+}
+
+void Cluster::log_delay_continuous_time(const std::string &filename,
+                                        int64_t arrival_time_slot,
+                                        int64_t completion_time_slot,
+                                        double delay) {
+    std::ofstream out(filename, std::ofstream::app);
+    if (!out) {
+        std::cerr << "Error: could not open file " << filename << "!"
+        << std::endl;
+        exit(1);
+    }
+    out << arrival_time_slot << " " << completion_time_slot << " " << delay
+        << std::endl;
+    out.close();
 }
 
 Queues rand_sample(int64_t n, int64_t m, std::mt19937 &rng) {  // NOLINT

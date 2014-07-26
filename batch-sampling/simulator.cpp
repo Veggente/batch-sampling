@@ -41,6 +41,8 @@ void Simulator::init(int64_t n, double a, int64_t b, double t, double r,
     }
 }
 
+// Potential arrival. A batch arrival happens only when the Bernoulli random
+// variable turns out to be one.
 void Simulator::arrive(int64_t time_slot, std::mt19937 &rng) {  // NOLINT
     double arrival_probability = arrival_rate_per_server_*num_servers_
                                  *time_slot_length_/batch_size_;
@@ -77,5 +79,41 @@ void Simulator::synopsize(const std::string &filename_infix) {
         // Use scheduler-specific suffix combined with the infix.
         std::string filename_suffix = filename_infix+"_"+cluster_[i].suffix();
         cluster_[i].synopsize(filename_suffix);
+    }
+}
+
+// TODO(Veggente): Include accurate time.
+// Guaranteed arrival. A batch arrival happens.
+void Simulator::arrive_continuous_time(double time,
+                                       std::mt19937 &rng) {  // NOLINT
+    for (int i = starting_policy_index_; i < static_cast<int>(cluster_.size());
+         ++i) {
+        cluster_[i].arrive_continuous_time(time, rng);
+    }
+}
+
+// TODO(Veggente): Include accurate time.
+// Potential departure at a random server.
+void Simulator::depart_single_continuous_time(double time,
+        const std::string &filename_infix, std::mt19937 &rng) {
+    for (int i = starting_policy_index_; i < static_cast<int>(cluster_.size());
+         ++i) {
+        cluster_[i].depart_single_continuous_time(time, filename_infix, rng);
+    }
+}
+
+void Simulator::log_queues_no_clock_tick(const std::string &filename_prefix) {
+    for (int i = starting_policy_index_; i < static_cast<int>(cluster_.size());
+         ++i) {
+        // Use scheduler-specific suffix combined with the prefix.
+        std::string filename = filename_prefix+"_"+cluster_[i].suffix();
+        cluster_[i].log_queues(filename);
+    }
+}
+
+void Simulator::clock_tick() {
+    for (int i = starting_policy_index_; i < static_cast<int>(cluster_.size());
+         ++i) {
+        cluster_[i].clock_tick();
     }
 }

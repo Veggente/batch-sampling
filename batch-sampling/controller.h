@@ -29,6 +29,8 @@ public:  // NOLINT
     // TODO(Veggente): fewer precision for doubles.
     std::string infix() const;
     void progress_bar(int time_slot);
+    double batch_arrival_rate() const {return arrival_rate_per_server_
+        *num_servers_/batch_size_;}
 private:  // NOLINT
     int64_t num_servers_;
     int64_t batch_size_;

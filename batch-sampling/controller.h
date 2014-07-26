@@ -31,6 +31,7 @@ public:  // NOLINT
     void progress_bar(int time_slot);
     double batch_arrival_rate() const {return arrival_rate_per_server_
         *num_servers_/batch_size_;}
+    void progress_bar(double time);
 private:  // NOLINT
     int64_t num_servers_;
     int64_t batch_size_;
@@ -39,6 +40,7 @@ private:  // NOLINT
     double time_slot_length_;
     double total_time_;
     double probe_ratio_;
+    int progress_percentage_;
 };
 
 #endif  // BATCH_SAMPLING_CONTROLLER_H_

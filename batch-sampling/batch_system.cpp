@@ -105,7 +105,8 @@ void BatchSystem::run_continuous_time(std::mt19937 &rng) {  // NOLINT
         // Clock tick.
         simulator_.clock_tick();
         // TODO(Veggente): Output synopsis if necessary.
-        // TODO(Veggente): Continuous-time progress bar.
+        // Continuous-time progress bar.
+        controller_.progress_bar(time_);
     }
     // TODO(Veggente): Final synopsis.
 }

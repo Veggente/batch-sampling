@@ -19,6 +19,7 @@ Controller::Controller() {
     time_slot_length_ = 1.0;
     total_time_ = 1.0;
     probe_ratio_ = 1.0;
+    progress_percentage_ = 0;
 }
 
 void Controller::init(int64_t n, double a, double arr_pr, double total_time,
@@ -63,5 +64,18 @@ void Controller::progress_bar(int time_slot) {
                (time_slot-1)*kAHundred/num_time_slots()) {
         std::cout << "\r" << time_slot*kAHundred/num_time_slots()
                   << "% completed." << std::flush;
+    }
+}
+
+void Controller::progress_bar(double time) {
+    if (time/total_time_*kAHundred >
+        static_cast<double>(progress_percentage_)) {
+        if (progress_percentage_ == kAHundred-1) {
+            std::cout << "\rDone!           " << std::endl;
+        } else {
+            std::cout << "\r" << progress_percentage_ << "% completed."
+                      << std::flush;
+            ++progress_percentage_;
+        }
     }
 }

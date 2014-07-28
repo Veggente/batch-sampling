@@ -60,12 +60,8 @@ void BatchSystem::show_config(int log_indicator) {
     std::cout << "Number of servers: " << controller_.num_servers() << std::endl
     << "Batch size: " << controller_.batch_size() << std::endl
     << "Arrival rate: " << controller_.arrival_rate_per_server() << std::endl
-//    << "Arrival probability: " << controller_.arrival_probability()
-//    << std::endl
-//    << "Time slot length: " << controller_.time_slot_length() << std::endl
     << "Total time: " << controller_.total_time() << std::endl
     << "Probe ratio: " << controller_.probe_ratio() << std::endl
-//    << "Number of time slots: " << controller_.num_time_slots() << std::endl;
     << "Log all queues and delays: " << log_indicator << std::endl
     << "Expected number of events: " << (controller_.arrival_rate_per_server()
                                          /controller_.batch_size()+1)
@@ -88,12 +84,9 @@ void BatchSystem::run_continuous_time(int log_indicator,
         if (inter_arrival_time < inter_departure_time) {
             // Time increments.
             time_ += inter_arrival_time;
-            // Pre-arrival queue length log.
-            // Disabled since post-event queue length is sufficient.
-//            simulator_.log_queues_no_clock_tick("pre_arrival_queues_"
-//                                                +controller_.infix());
             // Arrival to clusters and update members.
-            simulator_.arrive_continuous_time(time_, rng);
+//            simulator_.arrive_continuous_time(time_, rng);
+            simulator_.arrive_geometric(time_, rng);
         } else {  // If departure happens, randomly choose a server to depart.
                   // If queue is not empty, task delay is recorded. If task is
                   // the last of batch, batch delay is recorded.
@@ -103,10 +96,6 @@ void BatchSystem::run_continuous_time(int log_indicator,
             // delay.
             simulator_.depart_single_continuous_time(time_, controller_.infix(),
                                                      rng, log_indicator);
-            // Post-departure queue length log.
-            // Disabled since post-event queue length is sufficient.
-//            simulator_.log_queues_no_clock_tick("post_departure_queues_"
-//                                                +controller_.infix());
         }
         // Post-event queue length log.
         if (log_indicator != 0) {

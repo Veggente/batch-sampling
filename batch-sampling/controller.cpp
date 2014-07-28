@@ -51,7 +51,6 @@ std::string Controller::infix() const {
     std::string s = "n"+std::to_string(num_servers_)
                     +"_b"+std::to_string(batch_size_)
                     +"_a"+std::to_string(arrival_rate_per_server_)
-    //                    +"_p"+std::to_string(arrival_probability_)
                     +"_t"+std::to_string(total_time_)
                     +"_r"+std::to_string(probe_ratio_);
     return s;
@@ -76,8 +75,6 @@ void Controller::progress_bar(double time) {
         } else {
             std::cout << "\r" << progress_percentage_ << "% completed."
                       << std::flush;
-            // TODO(Veggente): Fixed large jumps.
-//            ++progress_percentage_;
             progress_percentage_ = std::rint(std::ceil(time/total_time_*
                                                        kAHundred));
         }

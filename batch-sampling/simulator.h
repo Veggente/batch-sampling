@@ -32,6 +32,8 @@ public:  // NOLINT
     void log_queues_no_clock_tick(const std::string&fileanme_prefix);
     void clock_tick();
     void synopsize_continuous_time(const std::string &filename_infix);
+    void arrive_poisson(double time, std::mt19937 &rng);  // NOLINT
+    void arrive_geometric(double time, std::mt19937 &rng);  // NOLINT
 private:  // NOLINT
     int64_t num_servers_;
     double arrival_rate_per_server_;

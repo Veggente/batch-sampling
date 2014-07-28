@@ -49,16 +49,8 @@ void Simulator::arrive(int64_t time_slot, std::mt19937 &rng) {  // NOLINT
                                  *time_slot_length_/batch_size_;
     std::bernoulli_distribution bern(arrival_probability);
     if (bern(rng)) {
-        // Determine batch size and check overflow.
-        // TODO(Veggente): Compatibility with fixed batch size.
-        std::poisson_distribution<> pois(batch_size_);
-        int64_t new_batch_size = pois(rng);
-        while (new_batch_size*kMaxProbeRatio > num_servers_) {
-            new_batch_size = pois(rng);
-        }
         for (int i = starting_policy_index_;
              i < static_cast<int>(cluster_.size()); ++i) {
-            cluster_[i].change_batch_size(new_batch_size);
             cluster_[i].arrive(time_slot, rng);
         }
     }
@@ -91,11 +83,19 @@ void Simulator::synopsize(const std::string &filename_infix) {
     }
 }
 
-// Guaranteed arrival. A batch arrival happens.
+// Guaranteed arrival. A batch arrival happens with fixed batch size.
 void Simulator::arrive_continuous_time(double time,
                                        std::mt19937 &rng) {  // NOLINT
+    for (int i = starting_policy_index_; i < static_cast<int>(cluster_.size());
+         ++i) {
+        cluster_[i].arrive_continuous_time(time, rng);
+    }
+}
+
+// Guaranteed arrival. A batch arrival happens with Poisson batch size.
+void Simulator::arrive_poisson(double time,
+                               std::mt19937 &rng) {  // NOLINT
     // Determine batch size and check overflow.
-    // TODO(Veggente): Compatibility with fixed batch size.
     std::poisson_distribution<> pois(batch_size_);
     int64_t new_batch_size = pois(rng);
     while (new_batch_size*kMaxProbeRatio > num_servers_) {
@@ -141,5 +141,30 @@ void Simulator::synopsize_continuous_time(const std::string &filename_infix) {
         // Use scheduler-specific suffix combined with the infix.
         std::string filename_suffix = filename_infix+"_"+cluster_[i].suffix();
         cluster_[i].synopsize_continuous_time(filename_suffix);
+    }
+}
+
+void Simulator::arrive_geometric(double time, std::mt19937 &rng) {  // NOLINT
+    // Determine batch size.
+    std::bernoulli_distribution bern(0.5);
+    int64_t new_batch_size = 0;
+    if (bern(rng)) {  // Geometric with small mean.
+        std::geometric_distribution<> geom(1.0/kGeometricMeanSmall);
+        new_batch_size = geom(rng);
+    } else {  // Geometric with large mean.
+        std::geometric_distribution<> geom(1.0/kGeometricMeanLarge);
+        new_batch_size = geom(rng);
+    }
+    // Bounded at half server size.
+    if (new_batch_size > num_servers_/2) {
+        new_batch_size = num_servers_/2;
+    }
+    // Arrival.
+    for (int i = starting_policy_index_; i < static_cast<int>(cluster_.size());
+         ++i) {
+        cluster_[i].change_batch_size(new_batch_size);
+        if (new_batch_size > 0) {
+            cluster_[i].arrive_continuous_time(time, rng);
+        }
     }
 }

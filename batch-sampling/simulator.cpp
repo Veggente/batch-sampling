@@ -49,8 +49,16 @@ void Simulator::arrive(int64_t time_slot, std::mt19937 &rng) {  // NOLINT
                                  *time_slot_length_/batch_size_;
     std::bernoulli_distribution bern(arrival_probability);
     if (bern(rng)) {
+        // Determine batch size and check overflow.
+        // TODO(Veggente): Compatibility with fixed batch size.
+        std::poisson_distribution<> pois(batch_size_);
+        int64_t new_batch_size = pois(rng);
+        while (new_batch_size*kMaxProbeRatio > num_servers_) {
+            new_batch_size = pois(rng);
+        }
         for (int i = starting_policy_index_;
              i < static_cast<int>(cluster_.size()); ++i) {
+            cluster_[i].change_batch_size(new_batch_size);
             cluster_[i].arrive(time_slot, rng);
         }
     }
@@ -86,8 +94,16 @@ void Simulator::synopsize(const std::string &filename_infix) {
 // Guaranteed arrival. A batch arrival happens.
 void Simulator::arrive_continuous_time(double time,
                                        std::mt19937 &rng) {  // NOLINT
+    // Determine batch size and check overflow.
+    // TODO(Veggente): Compatibility with fixed batch size.
+    std::poisson_distribution<> pois(batch_size_);
+    int64_t new_batch_size = pois(rng);
+    while (new_batch_size*kMaxProbeRatio > num_servers_) {
+        new_batch_size = pois(rng);
+    }
     for (int i = starting_policy_index_; i < static_cast<int>(cluster_.size());
          ++i) {
+        cluster_[i].change_batch_size(new_batch_size);
         cluster_[i].arrive_continuous_time(time, rng);
     }
 }

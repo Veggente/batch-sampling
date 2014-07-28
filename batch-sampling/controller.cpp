@@ -76,7 +76,10 @@ void Controller::progress_bar(double time) {
         } else {
             std::cout << "\r" << progress_percentage_ << "% completed."
                       << std::flush;
-            ++progress_percentage_;
+            // TODO(Veggente): Fixed large jumps.
+//            ++progress_percentage_;
+            progress_percentage_ = std::rint(std::ceil(time/total_time_*
+                                                       kAHundred));
         }
     }
 }

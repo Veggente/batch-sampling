@@ -323,6 +323,11 @@ void Cluster::synopsize_continuous_time(const std::string &filename_suffix) {
     out << std::endl;
 }
 
+void Cluster::change_batch_size(int64_t new_batch_size) {
+    assert(new_batch_size*scheduler_.probe_ratio() <= num_servers_);
+    batch_size_ = new_batch_size;
+}
+
 Queues rand_sample(int64_t n, int64_t m, std::mt19937 &rng) {  // NOLINT
     assert(n >= m);
     std::uniform_int_distribution<int64_t> dis(1, n);

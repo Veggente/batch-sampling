@@ -41,6 +41,7 @@ public:  // NOLINT
                                    int64_t arrival_time_slot,
                                    int64_t completion_time_slot, double delay);
     void synopsize_continuous_time(const std::string &filename_suffix);
+    void change_batch_size(int64_t new_batch_size);
 private:  // NOLINT
     Queues queue_length_;
     Scheduler scheduler_;

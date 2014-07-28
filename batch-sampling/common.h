@@ -25,5 +25,8 @@ typedef std::vector<BatchNumbers> BatchQueues;
 const int kNumInputArguments = 7;
 const int kAHundred = 100;
 const int kNumSynopses = 10;
+// TODO(Veggente): Include input argument.
+//const double kMeanBatchSize = 100.0;
+const double kMaxProbeRatio = 2.0;
 
 #endif  // BATCH_SAMPLING_COMMON_H_

@@ -42,28 +42,6 @@ void Simulator::init(int64_t n, double a, int64_t b, double t, double r,
     }
 }
 
-// Potential arrival. A batch arrival happens only when the Bernoulli random
-// variable turns out to be one.
-void Simulator::arrive(int64_t time_slot, std::mt19937 &rng) {  // NOLINT
-    double arrival_probability = arrival_rate_per_server_*num_servers_
-                                 *time_slot_length_/batch_size_;
-    std::bernoulli_distribution bern(arrival_probability);
-    if (bern(rng)) {
-        for (int i = starting_policy_index_;
-             i < static_cast<int>(cluster_.size()); ++i) {
-            cluster_[i].arrive(time_slot, rng);
-        }
-    }
-}
-
-void Simulator::depart(int64_t time_slot, const std::string &filename_prefix,
-                       std::mt19937 &rng) {  // NOLINT
-    for (int i = starting_policy_index_; i < static_cast<int>(cluster_.size());
-         ++i) {
-        cluster_[i].depart(time_slot, filename_prefix, rng);
-    }
-}
-
 void Simulator::log_queues(const std::string &filename_prefix) {
     for (int i = starting_policy_index_; i < static_cast<int>(cluster_.size());
          ++i) {

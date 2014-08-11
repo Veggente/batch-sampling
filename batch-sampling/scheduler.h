@@ -11,8 +11,6 @@
 #include <random>
 #include "./common.h"
 
-// TODO(Veggente): use iterator arguments to allow sampling partial queues to
-// speed up mit.
 // Batch sampling with water filling algorithm.
 Queues bswf(const Queues &queue, int64_t num_to_fill, std::mt19937 &rng);
 // Batch sampling without water filling algorithm.

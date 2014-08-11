@@ -17,11 +17,16 @@ int main(int argc, const char * argv[]) {
         return 1;
     }
     std::string num_servers_str(argv[1]);
+    // If the batch size is greater than 0, use fixed batch
+    // size; otherwise use the following predefined variable batch size:
+    //     Geometric with mean 75 with probability 0.5,
+    //     Geometric with mean 125 with probability 0.5.
     std::string batch_size_str(argv[2]);
-    std::string arrival_rate_str(argv[3]);
+    std::string arrival_rate_str(argv[3]);  // Arrival rate per server.
     std::string log_all_queues_str(argv[4]);
     std::string total_time_str(argv[5]);
     std::string probe_ratio_str(argv[6]);
+    // TODO(Veggente): policy selector.
     std::string mit_indicator_str(argv[7]);
     BatchSystem bs;
     int64_t num_servers = std::stoll(num_servers_str);

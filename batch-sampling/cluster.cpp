@@ -89,49 +89,6 @@ void Cluster::arrive(int64_t time_slot, std::mt19937 &rng) {  // NOLINT
     num_remaining_tasks_[time_slot] = static_cast<int>(batch_size_);
 }
 
-// TODO(Veggente): Use the local time slot instead of the external one.
-void Cluster::depart(int64_t time_slot, const std::string &filename_infix,
-                     std::mt19937 &rng) {  // NOLINT
-    // time_slot_length_ is the parameter of the Bernoulli service since the
-    // service rate is 1.
-    std::bernoulli_distribution bern(time_slot_length_);
-    for (int64_t i = 0; i < num_servers_; ++i) {
-        int64_t this_length = queue_length_[i];
-        if (this_length > 0 && bern(rng)) {
-            assert(num_servers_queue_at_least_.find(this_length) !=
-                   num_servers_queue_at_least_.end());
-            if (num_servers_queue_at_least_[this_length] == 1) {
-                num_servers_queue_at_least_.erase(this_length);
-            } else {
-                --num_servers_queue_at_least_[this_length];
-            }
-            --queue_length_[i];
-            int64_t depart_batch_number = batch_queue_[i].front();
-            assert(num_remaining_tasks_.find(depart_batch_number) !=
-                   num_remaining_tasks_.end());
-            if (num_remaining_tasks_[depart_batch_number] == 1) {
-                // Erase map and record batch delay.
-                num_remaining_tasks_.erase(depart_batch_number);
-                std::string filename = "batch_delays_"+filename_infix+"_"
-                                       +suffix();
-                log_delay(filename, depart_batch_number, time_slot);
-                // Maintain batch completion counter and cumulative batch delay.
-                ++num_batches_completed_;
-                cumulative_batch_delay_ += time_slot-depart_batch_number;
-            } else {
-                --num_remaining_tasks_[depart_batch_number];
-            }
-            batch_queue_[i].pop_front();
-            // Record task delay.
-            std::string filename = "task_delays_"+filename_infix+"_"+suffix();
-            log_delay(filename, depart_batch_number, time_slot);
-            // Maintain task completion counter and cumulative task delay.
-            ++num_tasks_completed_;
-            cumulative_task_delay_ += time_slot-depart_batch_number;
-        }
-    }
-}
-
 std::string Cluster::suffix() {
     EnumParser<Policy> parser_policy;
     std::string s = parser_policy.enum_to_string(scheduler_.policy())+"_"

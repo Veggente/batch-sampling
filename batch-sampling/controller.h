@@ -14,7 +14,6 @@
 class Controller {
 public:  // NOLINT
     Controller();
-    void init(int64_t n, double a, double arr_pr, double total_time, double r);
     void init(int64_t n, int64_t b, double a, double arr_pr, double total_time,
               double r);
     int64_t num_servers() const {return num_servers_;}
@@ -31,10 +30,12 @@ public:  // NOLINT
     // Discrete-time version progress bar.
     void progress_bar(int time_slot);
     double batch_arrival_rate() const {return arrival_rate_per_server_
-        *num_servers_/batch_size_;}
+        *num_servers_/mean_batch_size_;}
     // Continuous-time version progress bar.
     void progress_bar(double time);
     bool is_synopsis_time(double time);
+    void show_config(int log_indicator);
+    bool variable_batch_indicator() const {return variable_batch_indicator_;}
 private:  // NOLINT
     int64_t num_servers_;
     int64_t batch_size_;
@@ -45,6 +46,8 @@ private:  // NOLINT
     double probe_ratio_;
     int progress_percentage_;
     int synopsis_counter_;
+    double mean_batch_size_;
+    bool variable_batch_indicator_;
 };
 
 #endif  // BATCH_SAMPLING_CONTROLLER_H_

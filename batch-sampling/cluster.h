@@ -24,8 +24,6 @@ public:  // NOLINT
     Cluster();
     void init(int64_t n, int64_t b, Policy p, double r, double t);
     void arrive(int64_t time_slot, std::mt19937 &rng);  // NOLINT
-    void depart(int64_t time_slot, const std::string &filename_infix,
-                std::mt19937 &rng);  // NOLINT
     Queues queue_length() const {return queue_length_;}
     std::string suffix();
     void log_queues(const std::string &filename);

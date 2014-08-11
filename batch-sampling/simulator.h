@@ -20,9 +20,6 @@ public:  // NOLINT
     // r is the probe ratio.
     void init(int64_t n, double a, int64_t b, double t, double r,
               int mit_indicator);
-    void arrive(int64_t time_slot, std::mt19937 &rng);  // NOLINT
-    void depart(int64_t time_slot, const std::string &filename_prefix,
-                std::mt19937 &rng);  // NOLINT
     void log_queues(const std::string &filename_prefix);
     void synopsize(const std::string &filename_infix);
     void arrive_continuous_time(double time, std::mt19937 &rng);  // NOLINT

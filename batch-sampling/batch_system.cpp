@@ -14,15 +14,6 @@ BatchSystem::BatchSystem() {
     simulator_ = Simulator();
 }
 
-void BatchSystem::init(int64_t n, double a, double arr_pr, double total_time,
-                       double r, int mit_indicator) {
-    controller_.init(n, a, arr_pr, total_time, r);
-    simulator_.init(controller_.num_servers(),
-                    controller_.arrival_rate_per_server(),
-                    controller_.batch_size(), controller_.time_slot_length(),
-                    controller_.probe_ratio(), mit_indicator);
-}
-
 void BatchSystem::init(int64_t n, int64_t b, double a, double arr_pr,
                        double total_time, double r, int mit_indicator) {
     controller_.init(n, b, a, arr_pr, total_time, r);
@@ -32,41 +23,8 @@ void BatchSystem::init(int64_t n, int64_t b, double a, double arr_pr,
                     controller_.probe_ratio(), mit_indicator);
 }
 
-void BatchSystem::run(std::mt19937 &rng) {  // NOLINT
-    int num_time_slots = controller_.num_time_slots();
-    for (int i = 0; i < num_time_slots; ++i) {
-        simulator_.arrive(i, rng);
-        simulator_.depart(i, controller_.infix(), rng);
-        // TODO(Veggente): possible speedup by generating filename once for all.
-        simulator_.log_queues("queues_"+controller_.infix());
-        // Output kNumSynopses-1 synopses in the middle of the simulation. The
-        // synopsis data can be used to quickly compute desired statistics
-        // without reading all the raw files.
-        if (i > 0 &&
-            i/(num_time_slots/kNumSynopses) !=
-            (i-1)/(num_time_slots/kNumSynopses) &&
-            i/(num_time_slots/kNumSynopses) < kNumSynopses) {
-            simulator_.synopsize(controller_.infix());
-        }
-        controller_.progress_bar(i);
-    }
-    // Output a final synopsis.
-    simulator_.synopsize(controller_.infix());
-}
-
-// TODO(Veggente): should migrate to Controller.
 void BatchSystem::show_config(int log_indicator) {
-    std::cout << "===========Config===========" << std::endl;
-    std::cout << "Number of servers: " << controller_.num_servers() << std::endl
-    << "Batch size: " << controller_.batch_size() << std::endl
-    << "Arrival rate: " << controller_.arrival_rate_per_server() << std::endl
-    << "Total time: " << controller_.total_time() << std::endl
-    << "Probe ratio: " << controller_.probe_ratio() << std::endl
-    << "Log all queues and delays: " << log_indicator << std::endl
-    << "Expected number of events: " << (controller_.arrival_rate_per_server()
-                                         /controller_.batch_size()+1)
-        *controller_.num_servers()*controller_.total_time() << std::endl;
-    std::cout << "============================" << std::endl;
+    controller_.show_config(log_indicator);
 }
 
 void BatchSystem::run_continuous_time(int log_indicator,
@@ -85,8 +43,11 @@ void BatchSystem::run_continuous_time(int log_indicator,
             // Time increments.
             time_ += inter_arrival_time;
             // Arrival to clusters and update members.
-//            simulator_.arrive_continuous_time(time_, rng);
-            simulator_.arrive_geometric(time_, rng);
+            if (controller_.variable_batch_indicator()) {
+                simulator_.arrive_geometric(time_, rng);
+            } else {
+                simulator_.arrive_continuous_time(time_, rng);
+            }
         } else {  // If departure happens, randomly choose a server to depart.
                   // If queue is not empty, task delay is recorded. If task is
                   // the last of batch, batch delay is recorded.

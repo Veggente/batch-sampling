@@ -21,18 +21,8 @@ Controller::Controller() {
     probe_ratio_ = 1.0;
     progress_percentage_ = 0;
     synopsis_counter_ = 1;
-}
-
-void Controller::init(int64_t n, double a, double arr_pr, double total_time,
-                      double r) {
-    num_servers_ = n;
-    batch_size_ = std::llrint(std::log2(num_servers_));
-    arrival_rate_per_server_ = a;
-    arrival_probability_ = arr_pr;
-    time_slot_length_ = arrival_probability_*batch_size_/num_servers_
-        /arrival_rate_per_server_;
-    total_time_ = total_time;
-    probe_ratio_ = r;
+    mean_batch_size_ = 0.0;
+    variable_batch_indicator_ = false;
 }
 
 void Controller::init(int64_t n, int64_t b, double a, double arr_pr,
@@ -42,9 +32,15 @@ void Controller::init(int64_t n, int64_t b, double a, double arr_pr,
     arrival_rate_per_server_ = a;
     arrival_probability_ = arr_pr;
     time_slot_length_ = arrival_probability_*batch_size_/num_servers_
-    /arrival_rate_per_server_;
+        /arrival_rate_per_server_;
     total_time_ = total_time;
     probe_ratio_ = r;
+    if (b > 0) {
+        mean_batch_size_ = static_cast<double>(b);
+    } else {
+        mean_batch_size_ = static_cast<double>(kGeometricMeanBatchSize);
+        variable_batch_indicator_ = true;
+    }
 }
 
 std::string Controller::infix() const {
@@ -89,4 +85,23 @@ bool Controller::is_synopsis_time(double time) {
     } else {
         return false;
     }
+}
+
+void Controller::show_config(int log_indicator) {
+    std::cout << "==============Config==============" << std::endl;
+    std::cout << "Number of servers: " << num_servers_ << std::endl;
+    if (batch_size_ > 0) {
+        std::cout << "Batch size: " << batch_size_ << std::endl;
+    } else {
+        std::cout << "Batch size: variable with mean " << mean_batch_size_
+                  << std::endl;
+    }
+    std::cout << "Arrival rate: " << arrival_rate_per_server_ << std::endl
+    << "Total time: " << total_time_ << std::endl
+    << "Probe ratio: " << probe_ratio_ << std::endl
+    << "Log all queues and delays: " << log_indicator << std::endl
+    << "Expected number of events: "
+    << (arrival_rate_per_server_/mean_batch_size_+1)*num_servers_*total_time_
+    << std::endl;
+    std::cout << "==================================" << std::endl;
 }

@@ -28,5 +28,6 @@ const int kNumSynopses = 10;
 const double kMaxProbeRatio = 2.0;
 const double kGeometricMeanSmall = 75.0;
 const double kGeometricMeanLarge = 125.0;
+const double kGeometricMeanBatchSize = 100.0;
 
 #endif  // BATCH_SAMPLING_COMMON_H_

@@ -3,11 +3,11 @@ import os
 import math
 
 def main():
-    num_servers = [10000]
-    batch_size = 100;
-    arrival_rate = [0.99]
-    total_time = 100000
-    probe_ratio = 1.0
+    num_servers = [100]
+    batch_size = 20;
+    arrival_rate = [0.5]
+    total_time = 100
+    probe_ratio = 1.6
     mit_indicator = 0
     log_indicator = 0
     for n in num_servers:

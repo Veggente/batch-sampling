@@ -4,19 +4,24 @@ clear all; clc;
 num_synopses = 10;
 half_num_synopses = 5; % The number of synopsis from which we start to 
                        % record the statistics.
-num_servers_str = '100';
-batch_size = 20;
-arrival_rate_str = {'0.500000'};
-total_time_str = '100.000000';
+num_servers_str = '10000';
+batch_size = 100;
+arrival_rate_str = {'0.700000', '0.900000'};
+total_time_str = '10000.000000';
+probe_ratio_str_batch = {...
+    '1.000000', '1.100000', '1.200000', '1.300000', '1.400000',...
+    '1.500000', '1.600000', '1.700000', '1.800000', '1.900000',...
+    '2.000000'};
+data_dir = 'd1.0-2.0/';
+
+num_probe_ratios = length(probe_ratio_str_batch);
 % MIT uses constant probe ratio 2.
 for I = 1:num_probe_ratios
     probe_ratio_str{1}{I} = '2.000000';
 end
 % List of probe ratios of BS and BSWF to plot against.
-probe_ratio_str{2} = {'1.600000', '2.000000'};
-probe_ratio_str{3} = {'1.600000', '2.000000'};
-num_probe_ratios = 2;
-
+probe_ratio_str{2} = probe_ratio_str_batch;
+probe_ratio_str{3} = probe_ratio_str_batch;
 num_servers = str2double(num_servers_str);
 batch_size_str = num2str(batch_size);
 arrival_rate = str2num(char(arrival_rate_str)).';
@@ -48,12 +53,12 @@ for I_rate = 1:length(arrival_rate)
             disp(['Probe ratio is ', num2str(probe_ratio(I_policy,...
                 I_probe_ratio))])
             disp(['File suffix is ', filename_suffix])
-            batch = dlmread(['batch_', filename_suffix]);
+            batch = dlmread([data_dir, 'batch_', filename_suffix]);
             batch_last_half = batch(num_synopses, :)...
                 -batch(half_num_synopses, :);
             batch_delay(I_policy, I_probe_ratio) = batch_last_half(2)...
                 /batch_last_half(1);
-            task = dlmread(['task_', filename_suffix]);
+            task = dlmread([data_dir, 'task_', filename_suffix]);
             task_last_half = task(num_synopses, :)...
                 -task(half_num_synopses, :);
             task_delay(I_policy, I_probe_ratio) = task_last_half(2)...
